@@ -1,12 +1,17 @@
 module github.com/Kajmany/rapidrule
 
-go 1.23.4
+go 1.22.12 // Fedora40 only goes this high
 
 require (
+<<<<<<< HEAD
 	github.com/charmbracelet/bubbles v0.20.0
 	github.com/charmbracelet/bubbletea v1.3.4
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/google/generative-ai-go v0.19.0
+=======
+	github.com/charmbracelet/bubbletea v1.3.4
+	github.com/charmbracelet/lipgloss v1.1.0
+>>>>>>> main
 )
 
 require (
@@ -60,3 +65,5 @@ require (
 	google.golang.org/grpc v1.64.1 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 )
+
+replace github.com/Kajmany/rapidrule => ./
