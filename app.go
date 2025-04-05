@@ -129,11 +129,6 @@ func main() {
 
 	t.SetStyles(tableStyles)
 
-	// Initialize the program with our model
-	initialModel := model{
-		statusData: t,
-	}
-
 	// BubbleTea Logging setup
 	// log with log.Println("message")
 	log_type := "normal"
@@ -147,9 +142,14 @@ func main() {
 	}
 	defer f.Close()
 
-	p := tea.NewProgram(model{}, tea.WithAltScreen())
-  
-  
+	// Initialize table with the prepared table
+	initialModel := model{
+		statusData: t,
+	}
+
+	// Use the initialModel that has the table instead of an empty model
+	p := tea.NewProgram(initialModel, tea.WithAltScreen())
+
 	if err := p.Start(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
