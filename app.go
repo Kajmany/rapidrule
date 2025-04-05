@@ -89,6 +89,7 @@ func (m model) View() string {
 }
 
 func main() {
+
 	// Create table columns
 	columns := []table.Column{
 		{Title: "Local Port", Width: 20},
@@ -133,11 +134,22 @@ func main() {
 		statusData: t,
 	}
 
-	p := tea.NewProgram(
-		initialModel,
-		tea.WithAltScreen(),
-	)
+	// BubbleTea Logging setup
+	// log with log.Println("message")
+	log_type := "normal"
+	if len(os.Getenv("DEBUG")) > 0 {
+		log_type = "debug"
+	}
+	f, err := tea.LogToFile("debug.log", log_type)
+	if err != nil {
+		fmt.Println("fatal:", err)
+		os.Exit(1)
+	}
+	defer f.Close()
 
+	p := tea.NewProgram(model{}, tea.WithAltScreen())
+  
+  
 	if err := p.Start(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
