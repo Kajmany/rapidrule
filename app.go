@@ -92,21 +92,16 @@ func (m model) View() string {
 func main() {
 	// BubbleTea Logging setup
 	// log with log.Println("message")
+	log_type := "norma;"
 	if len(os.Getenv("DEBUG")) > 0 {
-		f, err := tea.LogToFile("debug.log", "debug")
-		if err != nil {
-			fmt.Println("fatal:", err)
-			os.Exit(1)
-		}
-		defer f.Close()
-	} else {
-		f, err := tea.LogToFile("debug.log", "normal")
-		if err != nil {
-			fmt.Println("fatal:", err)
-			os.Exit(1)
-		}
-		defer f.Close()
+		log_type = "debug"
 	}
+	f, err := tea.LogToFile("debug.log", log_type)
+	if err != nil {
+		fmt.Println("fatal:", err)
+		os.Exit(1)
+	}
+	defer f.Close()
 
 	p := tea.NewProgram(model{}, tea.WithAltScreen())
 	if err := p.Start(); err != nil {
