@@ -4,93 +4,140 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Kajmany/rapidrule/styles"
+	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
 type model struct {
-	width  int
-	height int
+	width      int
+	height     int
+	statusData table.Model
 }
 
-var (
-	// Add consistent padding to outer container
-	outerStyle = lipgloss.NewStyle()
-
-	leftStyle = lipgloss.NewStyle().
-			Padding(1).
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#FFC885"))
-
-	rightStyle = lipgloss.NewStyle().
-			Padding(1).
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#FFC885"))
-
-	// Style for the bottom ribbon for tooltips
-	ribbonStyle = lipgloss.NewStyle().
-			Padding(0, 1).
-			Height(1).
-			Background(lipgloss.Color("#FFC885")).
-			Foreground(lipgloss.Color("#000000"))
-
-	boldStyle = lipgloss.NewStyle().
-			Bold(true)
-)
-
-// Constants for layout
-const (
-	ribbonHeight = 1
-	outerPadding = 1
-)
-
-func (m model) Init() tea.Cmd {
-	return nil
-}
+func (m model) Init() tea.Cmd { return nil }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
 	switch msg := msg.(type) {
-
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "q", "ctrl+c":
 			return m, tea.Quit
+		case "i":
+			// Scroll up in table
+			m.statusData, cmd = m.statusData.Update(msg)
+			return m, cmd
+		case "j":
+			// Scroll down in table
+			m.statusData, cmd = m.statusData.Update(msg)
+			return m, cmd
 		}
 
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
+
+		// Update the table width when window size changes
+		leftWidth := ((m.width - 2*styles.OuterPadding) * 65) / 100
+		m.statusData.SetWidth(leftWidth - 4) // Subtract some space for padding/borders
 	}
 
-	return m, nil
+	// Let the table handle other update events
+	m.statusData, cmd = m.statusData.Update(msg)
+	return m, cmd
 }
 
 func (m model) View() string {
 	// Subtract padding for width and height
-	innerWidth := m.width - 2*outerPadding
-	innerHeight := m.height - 2*outerPadding - ribbonHeight
+	innerWidth := m.width - 2*styles.OuterPadding
+	innerHeight := m.height - 2*styles.OuterPadding - styles.RibbonHeight
 
 	leftWidth := (innerWidth * 65) / 100
 	rightWidth := innerWidth - leftWidth
 
-	leftContent := leftStyle.
+	// Calculate the available height for the table
+	// Account for the title, padding, and borders
+	titleHeight := 1   // "Status:" line
+	spacingHeight := 2 // Empty lines after title
+	borderHeight := 2  // Top and bottom borders
+	paddingHeight := 2 // Padding inside the border
+
+	tableHeight := innerHeight - titleHeight - spacingHeight - borderHeight - paddingHeight
+
+	// Adjust table height to fit available space
+	m.statusData.SetHeight(tableHeight)
+
+	statusTitle := styles.BoldStyle.Render("Status:")
+	tableView := m.statusData.View()
+
+	leftContent := styles.LeftStyle.
 		Width(leftWidth).
 		Height(innerHeight).
-		Render(boldStyle.Render("Status:") + "\n\nHere you can list logs, navigation, etc.")
+		Render(statusTitle + "\n\n" + tableView)
 
-	rightContent := rightStyle.
+	rightContent := styles.RightStyle.
 		Width(rightWidth).
 		Height(innerHeight).
-		Render(boldStyle.Render("Alerts") + "\n\nDetails, info, or secondary view.\n\nPress 'q' to quit.")
+		Render(styles.BoldStyle.Render("Alerts") + "\n\nDetails, info, or secondary view.\n\nPress 'q' to quit.")
 
 	content := lipgloss.JoinHorizontal(lipgloss.Top, leftContent, rightContent)
-	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, ribbonStyle.Render("[Q]uit"))
+	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render("[Q]uit | [I]p | [J]down"))
 
-	return outerStyle.Render(contentWithRibbon)
+	return styles.OuterStyle.Render(contentWithRibbon)
 }
 
 func main() {
-	p := tea.NewProgram(model{}, tea.WithAltScreen())
+	// Create table columns
+	columns := []table.Column{
+		{Title: "Local Port", Width: 20},
+		{Title: "Peer Addr : Port", Width: 20},
+		{Title: "Process", Width: 40},
+	}
+
+	// Create dummy rows for testing
+	rows := []table.Row{
+		{"80", "10.100.168.10:23453", "Nginx"},
+		{"3306", "10.100.168.454123", "MySQL"},
+		{"22", "10.100.168.454123", "SSHD"},
+	}
+
+	// Initialize table with dynamic sizing that will be set properly in View()
+	t := table.New(
+		table.WithColumns(columns),
+		table.WithRows(rows),
+		table.WithFocused(true),
+		table.WithHeight(10), // Initial height, will be adjusted in View()
+	)
+
+	// Create the proper table.Styles struct instead of using lipgloss.Style
+	tableStyles := table.Styles{
+		Header: styles.TableStyle.
+			Copy().
+			Padding(0, 1). // Reduce padding to fit border tighter
+			Background(lipgloss.Color("#FFC885")).
+			Foreground(lipgloss.Color("#000000")),
+		Selected: styles.SelectedStyle.
+			Copy().
+			Padding(0, 1), // Reduce padding to fit border tighter
+		Cell: styles.TableStyle.
+			Copy().
+			Padding(0, 1), // Reduce padding to fit border tighter
+	}
+
+	t.SetStyles(tableStyles)
+
+	// Initialize the program with our model
+	initialModel := model{
+		statusData: t,
+	}
+
+	p := tea.NewProgram(
+		initialModel,
+		tea.WithAltScreen(),
+	)
+
 	if err := p.Start(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
