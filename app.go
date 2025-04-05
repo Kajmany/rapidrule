@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Kajmany/rapidrule/llm"
 	"github.com/Kajmany/rapidrule/styles"
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
@@ -89,6 +90,7 @@ func (m model) View() string {
 }
 
 func main() {
+	llm.CallGemini("hi")
 
 	// Create table columns
 	columns := []table.Column{

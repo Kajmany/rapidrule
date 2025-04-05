@@ -1,4 +1,4 @@
-package gemini_llm
+package llm
 
 import (
 	"context"
@@ -10,6 +10,10 @@ import (
 	"github.com/google/generative-ai-go/genai"
 	"github.com/joho/godotenv"
 	"google.golang.org/api/option"
+)
+
+var (
+	geminiKey = getKey("GEMINI_API_KEY")
 )
 
 func getKey(key_name string) string {
@@ -26,7 +30,6 @@ func getKey(key_name string) string {
 }
 
 func CallGemini(prompt string) {
-	geminiKey := getKey("GEMINI_API_KEY")
 
 	// This example shows how to get a JSON response that conforms to a schema.
 	ctx := context.Background()
