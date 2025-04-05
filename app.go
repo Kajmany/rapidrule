@@ -14,6 +14,7 @@ import (
 
 func main() {
 	llm.CallGemini("hi")
+
 	// Create table columns
 	columns := []table.Column{
 		{Title: "Local Port", Width: 20},
