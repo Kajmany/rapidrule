@@ -115,16 +115,11 @@ func main() {
 	// Create the proper table.Styles struct instead of using lipgloss.Style
 	tableStyles := table.Styles{
 		Header: styles.TableStyle.
-			Copy().
 			Padding(0, 1). // Reduce padding to fit border tighter
 			Background(lipgloss.Color("#FFC885")).
 			Foreground(lipgloss.Color("#000000")),
-		Selected: styles.SelectedStyle.
-			Copy().
-			Padding(0, 1), // Reduce padding to fit border tighter
-		Cell: styles.TableStyle.
-			Copy().
-			Padding(0, 1), // Reduce padding to fit border tighter
+		Selected: styles.SelectedStyle.Padding(0, 1), // Reduce padding to fit border tighter
+		Cell:     styles.TableStyle.Padding(0, 1),    // Reduce padding to fit border tighter
 	}
 
 	t.SetStyles(tableStyles)
