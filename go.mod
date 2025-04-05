@@ -1,6 +1,6 @@
 module github.com/Kajmany/rapidrule
 
-go 1.23.4
+go 1.22.12 // Fedora40 only goes this high
 
 require github.com/charmbracelet/bubbletea v1.3.4
 
@@ -25,3 +25,5 @@ require (
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.3.8 // indirect
 )
+
+replace github.com/Kajmany/rapidrule => ./
