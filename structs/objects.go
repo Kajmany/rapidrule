@@ -108,4 +108,5 @@ const (
 type Strat struct {
 	Title string
 	Body  string
+	id    int
 }
