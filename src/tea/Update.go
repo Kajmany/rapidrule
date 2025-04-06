@@ -3,8 +3,10 @@ package tea
 import (
 	"log"
 
+	"github.com/Kajmany/rapidrule/llm"
 	"github.com/Kajmany/rapidrule/scraper"
 	"github.com/Kajmany/rapidrule/src/tea/styles"
+	"github.com/Kajmany/rapidrule/structs"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -20,7 +22,7 @@ func (m Model) Init() tea.Cmd {
 
 // Update handles events and updates the model
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var cmd tea.Cmd
+	var commands []tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		if m.Mode == normalMode {
@@ -40,10 +42,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// ss has rendered upon us DATA
 	case scraper.PortsMsg:
 		log.Println("got info for ports")
+		var ports_str string
 		for i, port := range msg.Ports {
 			log.Printf("%d: %s", i, port.String())
+			ports_str += port.String()
 		}
 		m.Ports = msg.Ports
+		commands = append(commands, llm.GetPortEvals(ports_str))
 
 		// or not...
 	case scraper.PortScrapeError:
@@ -61,11 +66,35 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case scraper.AlertError:
 		log.Printf("problem trying to check alert status: %s", msg.Err.Error())
 
+	case llm.PortEvalMsg:
+		log.Println("got info for port evals")
+		for _, eval := range msg.Evals {
+			log.Printf("Port %d: %s", eval.Port, eval.String())
+			for _, port := range m.Ports {
+				if port.Port == eval.Port {
+					port.Eval = &eval
+					switch eval.Investigate {
+					case "No":
+						port.LLMRes = structs.Good
+					case "Maybe":
+						port.LLMRes = structs.Attention
+					case "Yes":
+						port.LLMRes = structs.Bad
+					}
+					break
+				}
+			}
+		}
+
+	case llm.PortEvalError:
+		log.Printf("port eval error message: %s", msg.Err.Error())
 	}
 
 	// Let the table handle other update events
+	var cmd tea.Cmd
 	m.StatusData, cmd = m.StatusData.Update(msg)
-	return m, cmd
+	commands = append(commands, cmd)
+	return m, tea.Batch(commands...)
 }
 
 func (m Model) updateNormalMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {

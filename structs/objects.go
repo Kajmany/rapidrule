@@ -8,16 +8,26 @@ type Port struct {
 	LocalAddr string // Can be text like loopback
 	Port      int
 	Process   string // Not PID, just name (add pid later if we need it)
-	// Notice no shortdesc
-	LongDesc       string // Our own templated string
-	LLMDescription string // Multiline human-readable elaboration
 	// Other state
 	LLMRes    Judgement // Machine-readable judgement
 	LLMStatus JudgementProgress
+	Eval      *Eval
 }
 
 func (p Port) String() string {
 	return fmt.Sprintf("Port: %s:%d held by %s", p.LocalAddr, p.Port, p.Process)
+}
+
+type Eval struct {
+	Concerns    string `json:"concerns"`
+	Investigate string `json:"investigate"`
+	Confidence  string `json:"confidence"`
+	Port        int    `json:"port"`
+}
+
+func (e Eval) String() string {
+	return fmt.Sprintf("concerns: %s,\n investigate: %s,\n confidence: %s,\n port: %d,",
+		e.Concerns, e.Investigate, e.Confidence, e.Port)
 }
 
 type Alert struct {
