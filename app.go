@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Kajmany/rapidrule/llm"
 	localTea "github.com/Kajmany/rapidrule/src/tea"
 	"github.com/Kajmany/rapidrule/src/tea/styles"
 	"github.com/charmbracelet/bubbles/table"
@@ -76,6 +75,4 @@ func main() {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
 	}
-
-	llm.GeminiPortsEval("10.41.80.7:1337 ssh, 10.41.80.7:80 nginx, 10.41.80.7:57 nc")
 }

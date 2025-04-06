@@ -22,7 +22,7 @@ func (m Model) Init() tea.Cmd {
 
 // Update handles events and updates the model
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var cmd tea.Cmd
+	var commands []tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		if m.Mode == normalMode {
@@ -42,10 +42,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// ss has rendered upon us DATA
 	case scraper.PortsMsg:
 		log.Println("got info for ports")
+		var ports_str string
 		for i, port := range msg.Ports {
 			log.Printf("%d: %s", i, port.String())
+			ports_str += port.String()
 		}
 		m.Ports = msg.Ports
+		commands = append(commands, llm.GetPortEvals(ports_str))
 
 		// or not...
 	case scraper.PortScrapeError:
@@ -88,8 +91,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	// Let the table handle other update events
+	var cmd tea.Cmd
 	m.StatusData, cmd = m.StatusData.Update(msg)
-	return m, cmd
+	commands = append(commands, cmd)
+	return m, tea.Batch(commands...)
 }
 
 func (m Model) updateNormalMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
