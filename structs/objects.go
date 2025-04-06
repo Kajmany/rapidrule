@@ -103,3 +103,9 @@ const (
 	Inflight
 	Done
 )
+
+// strats/rules/etc
+type Strat struct {
+	Title string
+	Body  string
+}

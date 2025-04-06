@@ -9,6 +9,8 @@ import (
 func (m Model) View() string {
 	if m.Mode == portInfoMode {
 		return m.portInfoView()
+	} else if m.Mode == strategyMode {
+		return m.stratView()
 	} else {
 		return m.normalView()
 	}
@@ -88,7 +90,7 @@ func (m Model) normalView() string {
 		Render(alertsTitle + alertsContent)
 
 	content := lipgloss.JoinHorizontal(lipgloss.Top, leftContent, rightContent)
-	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render("[Q]uit | [↑] Up | [↓] Down | [space] Port Details"))
+	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render("[Q]uit | [↑] Up | [↓] Down | [<->] Strategy Mode | [space] Port Details"))
 
 	return styles.OuterStyle.Render(contentWithRibbon)
 }
@@ -121,6 +123,44 @@ func (m Model) portInfoView() string {
 
 	content := lipgloss.JoinHorizontal(lipgloss.Top, leftContent, rightContent)
 	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render("[Q]uit | [space] Normal Mode"))
+
+	return styles.OuterStyle.Render(contentWithRibbon)
+}
+
+func (m Model) stratView() string {
+	// Subtract padding for width and height
+	innerWidth := m.Width - 2*styles.OuterPadding
+	innerHeight := m.Height - 2*styles.OuterPadding - styles.RibbonHeight
+
+	leftWidth := (innerWidth * 35) / 100
+	rightWidth := innerWidth - leftWidth
+
+	// Port info content for the left panel
+	stratTitle := "Reccomended NFTables Strategies:"
+	stratContent := ""
+
+	if len(m.Strats) == 0 {
+		stratContent = "\n\nNo Strategies at this time."
+	} else {
+		for _, strat := range m.Strats {
+			stratContent += "\n" + styles.BoldStyle.Render(strat.Title)
+			stratContent += "\n" + strat.Body + "\n\n"
+		}
+	}
+
+	leftContent := styles.StratModeStyle.
+		Width(leftWidth).
+		Height(innerHeight).
+		Render(stratTitle + stratContent)
+
+	// Human summary content for the right panel
+	rightContent := styles.StratModeStyle.
+		Width(rightWidth).
+		Height(innerHeight).
+		Render(styles.BoldStyle.Render("Details for Strat") + "\n\nWe will write this later\n")
+
+	content := lipgloss.JoinHorizontal(lipgloss.Top, leftContent, rightContent)
+	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render("[Q]uit | [<->] Normal Mode"))
 
 	return styles.OuterStyle.Render(contentWithRibbon)
 }

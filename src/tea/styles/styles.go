@@ -11,6 +11,7 @@ const (
 	LightOrange  = "#FFC885"
 	LightGreen   = "#5FAB8F"
 	RibbonRed    = "#E67575"
+	Lime         = "#CAFE48"
 )
 
 // Styles used throughout the application
@@ -58,4 +59,9 @@ var (
 				Padding(1).
 				Border(lipgloss.RoundedBorder()).
 				BorderForeground(lipgloss.Color(LightGreen))
+
+	StratModeStyle = lipgloss.NewStyle().
+			Padding(1).
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color(Lime))
 )
