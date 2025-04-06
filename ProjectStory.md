@@ -1,7 +1,9 @@
 # RapidRule – A Fast, TUI-Based Semi-Automatic Firewall Starter for Small Home and Office Environments
 
+<img src="https://github.com/Kajmany/rapidrule/blob/main/RapidRulesLogo.png" width="150" alt="RapidRule logo">
+
 **GitHub Repository**: [https://github.com/Kajmany/rapidrule](https://github.com/Kajmany/rapidrule)
-<img src="https://github.com/Kajmany/rapidrule/blob/main/RapidRulesLogo.png" width="150">
+
 
 
 ---
