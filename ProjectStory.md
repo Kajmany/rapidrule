@@ -4,8 +4,6 @@
 
 **GitHub Repository**: [https://github.com/Kajmany/rapidrule](https://github.com/Kajmany/rapidrule)
 
-
-
 ---
 
 ## Overview
@@ -27,6 +25,8 @@ RapidRule aims to provide secure and customizable firewall configurations in a f
 ---
 
 ## Motivation
+
+There is a missing middle in security software. Between consumer-quality antivirus which is unsuitable for business usage, we've identified a chasm before the dizzyingly-complex enterprise security solutions. Aside from immense cost, these solutions ideally require 24/7 staffing across multiple security teams to maintain a mature deployment. Small and medium size businesses and institutions are simply left behind in this market, and we hope RapidRule can help buttress a defense-in-depth strategy for these forgotten sysadmins.
 
 Networking and `nftables` tend to be a rather esoteric subject. All of the information can be confusing and overwhelming. With RapidRule we work to explain vulnerabilities and misconfigurations while keeping a clean UI to avoid user overload.
 
@@ -60,7 +60,7 @@ All configurations can be previewed, modified, or exported before deployment.
 - **Language**: Go  
 - **Firewall Backend**: `nftables`  
 - **AI Integration**: Google Gemini API  
-- **Interface**: Terminal UI (TUI)  
+- **Interface**: Text User Interface (TUI) via Bubbletea
 
 ---
 
