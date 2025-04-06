@@ -136,15 +136,44 @@ func (m Model) stratView() string {
 	rightWidth := innerWidth - leftWidth
 
 	// Port info content for the left panel
-	stratTitle := "Reccomended NFTables Strategies:"
+	stratTitle := styles.BoldStyle.Render("Reccomended NFTables Strategies:")
 	stratContent := ""
 
 	if len(m.Strats) == 0 {
 		stratContent = "\n\nNo Strategies at this time."
 	} else {
-		for _, strat := range m.Strats {
-			stratContent += "\n" + styles.BoldStyle.Render(strat.Title)
-			stratContent += "\n" + strat.Body + "\n\n"
+		// Loop through strategies and highlight the selected one
+		for i, strat := range m.Strats {
+			// Add newline before each strategy
+			if i > 0 {
+				stratContent += "\n\n"
+			} else {
+				stratContent += "\n"
+			}
+
+			// Get the title with applied indicator if needed
+			title := strat.Title
+			if m.AppliedStrats[i] {
+				title = "✓ " + title + " (Applied)"
+			}
+
+			// Highlight the selected strategy
+			if i == m.StratCursor {
+				// Use highlighted style for the selected strategy
+				stratContent += styles.SelectedStyle.Render(title)
+			} else {
+				// Use bold style for non-selected strategies
+				if m.AppliedStrats[i] {
+					// Use a different style for applied strategies
+					stratContent += styles.AppliedStyle.Render(title)
+				} else {
+					stratContent += styles.BoldStyle.Render(title)
+				}
+			}
+
+			// Show a preview of the body (first line or so)
+			// This keeps the list compact while still providing context
+			stratContent += "\n" + truncateString(strat.Body, 50)
 		}
 	}
 
@@ -153,14 +182,52 @@ func (m Model) stratView() string {
 		Height(innerHeight).
 		Render(stratTitle + stratContent)
 
-	// Human summary content for the right panel
+	// Human summary content for the right panel - show details of selected strategy
+	detailTitle := styles.BoldStyle.Render("Strategy Details")
+	detailContent := "\n\nSelect a strategy to view details."
+
+	// If we have strategies and a valid cursor, show the details of the selected strategy
+	if len(m.Strats) > 0 && m.StratCursor >= 0 && m.StratCursor < len(m.Strats) {
+		selectedStrat := m.Strats[m.StratCursor]
+		detailContent = "\n\n" + styles.BoldStyle.Render(selectedStrat.Title)
+
+		// Add applied status
+		if m.AppliedStrats[m.StratCursor] {
+			detailContent += " " + styles.AppliedStyle.Render("(Applied)")
+		} else {
+			detailContent += " " + styles.BoldStyle.Render("(Not Applied)")
+		}
+
+		// Show the strategy details
+		detailContent += "\n\n" + selectedStrat.Body
+	}
+
 	rightContent := styles.StratModeStyle.
 		Width(rightWidth).
 		Height(innerHeight).
-		Render(styles.BoldStyle.Render("Details for Strat") + "\n\nWe will write this later\n")
+		Render(detailTitle + detailContent)
 
 	content := lipgloss.JoinHorizontal(lipgloss.Top, leftContent, rightContent)
-	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render("[Q]uit | [<->] Normal Mode"))
+
+	// Update the ribbon to include the spacebar action for applying a strategy
+	ribbonMsg := "[Q]uit | [↑] Up | [↓] Down | [<->] Normal Mode"
+	if len(m.Strats) > 0 {
+		if m.AppliedStrats[m.StratCursor] {
+			ribbonMsg += " | [Space] Remove Applied Strat"
+		} else {
+			ribbonMsg += " | [Space] Apply Strategy"
+		}
+	}
+
+	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render(ribbonMsg))
 
 	return styles.OuterStyle.Render(contentWithRibbon)
+}
+
+// Helper function to truncate a string to a specified length
+func truncateString(s string, maxLen int) string {
+	if len(s) <= maxLen {
+		return s
+	}
+	return s[:maxLen] + "..."
 }

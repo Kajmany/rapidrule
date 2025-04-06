@@ -156,6 +156,30 @@ func (m Model) updateStratMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "left", "right":
 		m.Mode = normalMode
 		return m, cmd
+	case "up":
+		// Move cursor up, with wraparound
+		if len(m.Strats) > 0 {
+			m.StratCursor--
+			if m.StratCursor < 0 {
+				m.StratCursor = len(m.Strats) - 1
+			}
+		}
+		return m, nil
+	case "down":
+		// Move cursor down, with wraparound
+		if len(m.Strats) > 0 {
+			m.StratCursor++
+			if m.StratCursor >= len(m.Strats) {
+				m.StratCursor = 0
+			}
+		}
+		return m, nil
+	case " ": // spacebar - apply the currently selected strategy
+		if len(m.Strats) > 0 && m.StratCursor >= 0 && m.StratCursor < len(m.Strats) {
+			// Call the ApplyStrategy function, which serves as a placeholder for the backend team
+			m.ApplyStrategy(m.StratCursor)
+		}
+		return m, nil
 	}
 	return m, nil
 }

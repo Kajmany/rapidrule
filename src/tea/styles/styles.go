@@ -12,6 +12,7 @@ const (
 	LightGreen   = "#5FAB8F"
 	RibbonRed    = "#E67575"
 	Lime         = "#CAFE48"
+	AppliedGreen = "#7CFC00" // Bright green for applied strategies
 )
 
 // Styles used throughout the application
@@ -45,6 +46,11 @@ var (
 	SelectedStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color("#888888")).
 			Background(lipgloss.Color("#333333")). // Add subtle background to show selection area
+			Bold(true)
+
+	// Style for strategies that have been applied
+	AppliedStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color(AppliedGreen)).
 			Bold(true)
 
 	// DetailStyle is used for the details section under the table
