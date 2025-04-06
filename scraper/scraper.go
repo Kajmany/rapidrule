@@ -1,5 +1,6 @@
 // Abstraction over Operating System to 'scrape' current state of
 // ports/processes/nftable rules as useful
+// These are and should probably only be run once at init (much more model logic is required to 'refresh')
 package scraper
 
 import (
@@ -77,4 +78,66 @@ func parseSSOutput(output string) ([]structs.Port, error) {
 	}
 
 	return ports, nil
+}
+
+// Sent when we have completed an alert check successfully
+// Can be nil if we checked and there's no alert
+type AlertMsg struct {
+	HasAlert bool
+	Alert    structs.Alert
+}
+
+// Sent when we error'd attempting to check if we should alert
+type AlertError struct {
+	Err error
+}
+
+func CheckIfRoot() tea.Cmd {
+	return func() tea.Msg {
+		// TODO: More portable way to do this?
+		cmd := exec.Command("id", "-u")
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			return AlertError{Err: fmt.Errorf("failed to check user id: %v", err)}
+		}
+
+		uid, err := strconv.Atoi(strings.TrimSpace(string(output)))
+		if err != nil {
+			return AlertError{Err: fmt.Errorf("failed to parse user id: %v", err)}
+		}
+
+		if uid != 0 {
+			return AlertMsg{
+				HasAlert: true,
+				Alert: structs.Alert{
+					ShortDesc: "Running as non-root user",
+					LongDesc:  "This program will not function without root access!",
+				},
+			}
+		}
+		return AlertMsg{HasAlert: false} // No alert if root
+	}
+}
+
+func CheckTables() tea.Cmd {
+	return func() tea.Msg {
+		// TODO: Should this logic be in nft driver?
+		cmd := exec.Command("nft", "list", "tables")
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			return AlertError{Err: fmt.Errorf("failed to list nftables: %v", err)}
+		}
+
+		tables := strings.TrimSpace(string(output))
+		if tables != "" {
+			return AlertMsg{
+				HasAlert: true,
+				Alert: structs.Alert{
+					ShortDesc: "Existing nftables rules detected",
+					LongDesc:  "System already has nftables rules which may conflict",
+				},
+			}
+		}
+		return AlertMsg{HasAlert: false} // No alert if no tables
+	}
 }

@@ -10,8 +10,12 @@ import (
 
 // Init initializes the model
 func (m Model) Init() tea.Cmd {
+	var commands []tea.Cmd
 	log.Println("init: attempting to scrape ports")
-	return scraper.GetPorts()
+	commands = append(commands, scraper.GetPorts())
+	commands = append(commands, scraper.CheckIfRoot())
+	commands = append(commands, scraper.CheckTables())
+	return tea.Batch(commands...)
 }
 
 // Update handles events and updates the model
@@ -41,8 +45,22 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		m.Ports = msg.Ports
 
+		// or not...
 	case scraper.PortScrapeError:
 		log.Printf("port scrape error message: %s", msg.Err.Error())
+
+	case scraper.AlertMsg:
+		if msg.HasAlert {
+			log.Printf("got an alert: %s", msg.Alert.String())
+			m.Alerts = append(m.Alerts, msg.Alert)
+		} else {
+			// Which? who knows?
+			log.Printf("alert check came back clear")
+		}
+
+	case scraper.AlertError:
+		log.Printf("problem trying to check alert status: %s", msg.Err.Error())
+
 	}
 
 	// Let the table handle other update events
