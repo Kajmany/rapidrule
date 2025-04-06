@@ -3,8 +3,10 @@ package tea
 import (
 	"log"
 
+	"github.com/Kajmany/rapidrule/llm"
 	"github.com/Kajmany/rapidrule/scraper"
 	"github.com/Kajmany/rapidrule/src/tea/styles"
+	"github.com/Kajmany/rapidrule/structs"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -43,6 +45,29 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case scraper.PortScrapeError:
 		log.Printf("port scrape error message: %s", msg.Err.Error())
+
+	case llm.PortEvalMsg:
+		log.Println("got info for port evals")
+		for _, eval := range msg.Evals {
+			log.Printf("Port %d: %s", eval.Port, eval.String())
+			for _, port := range m.Ports {
+				if port.Port == eval.Port {
+					port.Eval = &eval
+					switch eval.Investigate {
+					case "No":
+						port.LLMRes = structs.Good
+					case "Maybe":
+						port.LLMRes = structs.Attention
+					case "Yes":
+						port.LLMRes = structs.Bad
+					}
+					break
+				}
+			}
+		}
+
+	case llm.PortEvalError:
+		log.Printf("port eval error message: %s", msg.Err.Error())
 	}
 
 	// Let the table handle other update events

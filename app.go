@@ -13,9 +13,6 @@ import (
 )
 
 func main() {
-	llm.CallGemini_struct("Is the sky blue?")
-	os.Exit(1)
-
 	// Create table columns
 	columns := []table.Column{
 		{Title: "Local Port", Width: 20},
@@ -79,4 +76,6 @@ func main() {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
 	}
+
+	llm.GeminiPortsEval("10.41.80.7:1337 ssh, 10.41.80.7:80 nginx, 10.41.80.7:57 nc")
 }
