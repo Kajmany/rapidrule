@@ -23,10 +23,18 @@ const (
 	nftConfigPath = "/etc/nftables.conf"
 )
 
+type NFTMsgType int
+
+const (
+	Check    NFTMsgType = iota
+	WriteOut            // We can END now! yay
+)
+
 type NFTMsg struct {
 	// TODO: What else matters here? v0v we'll find out
 	Changed bool
 	Output  string
+	Type    NFTMsgType
 }
 
 type NFTErr struct {
@@ -120,5 +128,27 @@ func WriteRule(ruleset string) tea.Cmd {
 		}
 
 		return NFTMsg{Output: "rules written and loaded successfully", Changed: true}
+	}
+}
+
+// Checks a ruleset is expects is already written
+// TODO: Catching this before we right takes a bunch of update logic
+// that we don't have time for
+func CheckRule() tea.Cmd {
+	return func() tea.Msg {
+		fullPath := filepath.Join("/etc/nftables", nftIncludeFile)
+
+		// Check if file exists first
+		if _, err := os.Stat(fullPath); os.IsNotExist(err) {
+			return NFTErr{Err: fmt.Errorf("rules file %s does not exist", fullPath)}
+		}
+
+		// Run nft in check mode
+		cmd := exec.Command("nft", "-c", "-f", fullPath)
+		if output, err := cmd.CombinedOutput(); err != nil {
+			return NFTErr{Err: fmt.Errorf("rules check failed: %v: %s", err, string(output))}
+		}
+
+		return NFTMsg{Output: "rules check passed", Changed: false}
 	}
 }

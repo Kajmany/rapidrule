@@ -69,26 +69,22 @@ func main() {
 	// Initialize model with the prepared table
 	initialModel := localTea.NewModel(t)
 
+	// TODO: We should hard code these somewhere else but this works
 	initialModel.Strats = []structs.Strat{
 		{
-			Title: "Basic Firewall Setup",
-			Body:  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies ultricies, nunc nisl aliquam nunc, vitae aliquam nisl nunc vitae nisl. Nulla facilisi. Donec euismod, nisl eget ultricies ultricies, nunc nisl aliquam nunc, vitae aliquam nisl nunc vitae nisl. This strategy implements a basic firewall setup with sensible defaults for incoming and outgoing traffic.",
+			Title: "SSH Rate Limit",
+			Body:  "Allows no more than 15 SSH connection attempts per minute from a host",
+			Rule:  "tcp sport ssh ct state new limit rate 15/minute accept",
 		},
 		{
-			Title: "Application-Specific Rules",
-			Body:  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. This strategy creates specific rules for common applications like web servers, databases, and SSH to ensure only necessary ports are exposed.",
+			Title: "Allow ICMP",
+			Body:  "This should generally be accepted to create a well-functioning network",
+			Rule:  "meta l4proto { icmp, ipv6-icmp } accept",
 		},
 		{
-			Title: "Network Segmentation",
-			Body:  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras arcu libero, mollis sed, nonummy id, mattis ac, nulla. Curabitur auctor semper nulla. Donec varius orci eget risus. Duis nibh mi, congue eu, accumsan eleifend, sagittis quis, diam. This strategy implements network segmentation to isolate different parts of your network for improved security.",
-		},
-		{
-			Title: "Rate Limiting Protection",
-			Body:  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent aliquam, justo convallis luctus rutrum, erat nulla fermentum diam, at nonummy quam ante ac quam. Maecenas urna purus, fermentum id, molestie in, commodo porttitor, felis. This strategy adds rate limiting to protect against DoS attacks and brute force attempts.",
-		},
-		{
-			Title: "Intrusion Detection",
-			Body:  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam vestibulum accumsan nisl. Nullam eu ante vel est convallis dignissim. Fusce suscipit, wisi nec facilisis facilisis, est dui fermentum leo, quis tempor ligula erat quis odio. This strategy implements basic intrusion detection to alert on suspicious activity.",
+			Title: "Allow IGMP",
+			Body:  "This should almost always be accepted. It is important for efficient functioning of some protocols.",
+			Rule:  "ip protocol igmp accept",
 		},
 	}
 

@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/Kajmany/rapidrule/llm"
+	"github.com/Kajmany/rapidrule/nft"
 	"github.com/Kajmany/rapidrule/scraper"
 	"github.com/Kajmany/rapidrule/src/tea/styles"
 	"github.com/Kajmany/rapidrule/structs"
@@ -83,7 +84,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		log.Println("got info for port evals")
 		for _, eval := range msg.Evals {
 			log.Printf("Port %d: %s", eval.Port, eval.String())
-			for i, _ := range m.Ports {
+			for i := range m.Ports {
 				if m.Ports[i].Port == eval.Port {
 					m.Ports[i].Eval = &eval
 					switch eval.Investigate {
@@ -118,6 +119,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case llm.TotalEvalError:
 		log.Printf("total eval error message: %s", msg.Err.Error())
+
+	case nft.NFTErr:
+		log.Printf("problem running nft: %s", msg.Err.Error())
+
+	case nft.NFTMsg:
+		switch msg.Type {
+		case nft.Check:
+			log.Printf("NFT rules check completed: %s", msg.Output)
+		case nft.WriteOut:
+			log.Printf("NFT rules written successfully: %s - exiting", msg.Output)
+			return m, tea.Quit
+		}
+
 	}
 
 	// Let the table handle other update events
@@ -202,7 +216,6 @@ func (m Model) updateStratMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 func (m Model) updatePortInfoMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
-
 	switch msg.String() {
 	case "q", "ctrl+c":
 		return m, tea.Quit
@@ -229,6 +242,22 @@ func (m Model) updateStagingMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			if m.AppliedStrats[i] {
 				stagedCount++
 			}
+			// Collect all rules from staged strategies
+			var allRules []nft.Rule
+			for i, strat := range m.Strats {
+				if m.AppliedStrats[i] {
+					allRules = append(allRules, nft.Rule(strat.Rule))
+				}
+			}
+
+			// Generate chains
+			inputChain := nft.GenChain("input", "type filter hook input priority 0; policy drop;", allRules)
+			outboundChain := nft.GenOutBoundChain(allRules)
+
+			// Generate and write the complete table
+			table := nft.GenTable([]nft.Chain{inputChain, outboundChain})
+			return m, nft.WriteRule(string(table))
+
 		}
 
 		// Only proceed if there are strategies staged
