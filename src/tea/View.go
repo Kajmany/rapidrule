@@ -7,6 +7,14 @@ import (
 
 // View renders the UI
 func (m Model) View() string {
+	if m.Mode == portInfoMode {
+		return m.portInfoView()
+	} else {
+		return m.normalView()
+	}
+}
+
+func (m Model) normalView() string {
 	// Subtract padding for width and height
 	innerWidth := m.Width - 2*styles.OuterPadding
 	innerHeight := m.Height - 2*styles.OuterPadding - styles.RibbonHeight
@@ -21,7 +29,11 @@ func (m Model) View() string {
 	borderHeight := 2  // Top and bottom borders
 	paddingHeight := 2 // Padding inside the border
 
-	tableHeight := innerHeight - titleHeight - spacingHeight - borderHeight - paddingHeight
+	// Reserve space for the detail section (lorem ipsum)
+	detailHeight := 6 // Height for the detail section including borders and padding
+
+	// Adjust table height to account for detail section
+	tableHeight := innerHeight - titleHeight - spacingHeight - borderHeight - paddingHeight - detailHeight
 
 	// Ensure table height doesn't go below minimum usable size
 	if tableHeight < 5 {
@@ -38,18 +50,53 @@ func (m Model) View() string {
 	statusTitle := styles.BoldStyle.Render("Status:")
 	tableView := m.StatusData.View()
 
-	leftContent := styles.LeftStyle.
+	// Create the lorem ipsum detail section
+	loremText := "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor."
+	detailContent := styles.DetailStyle.
+		Width(leftWidth - 4). // Match table width
+		Render(styles.BoldStyle.Render("Ai Summary of Network Security Posture:") + "\n" + loremText)
+
+	leftContent := styles.NormalModeStyle.
 		Width(leftWidth).
 		Height(innerHeight).
-		Render(statusTitle + "\n\n" + tableView)
+		Render(statusTitle + "\n\n" + tableView + "\n\n" + detailContent)
 
-	rightContent := styles.RightStyle.
+	rightContent := styles.NormalModeStyle.
 		Width(rightWidth).
 		Height(innerHeight).
 		Render(styles.BoldStyle.Render("Alerts") + "\n\nDetails, info, or secondary view.\n\nPress 'q' to quit.")
 
 	content := lipgloss.JoinHorizontal(lipgloss.Top, leftContent, rightContent)
-	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render("[Q]uit | [I]p | [J]down"))
+	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render("[Q]uit | [↑] Up | [↓] Down | [space] Port Details"))
+
+	return styles.OuterStyle.Render(contentWithRibbon)
+}
+
+func (m Model) portInfoView() string {
+	// Subtract padding for width and height
+	innerWidth := m.Width - 2*styles.OuterPadding
+	innerHeight := m.Height - 2*styles.OuterPadding - styles.RibbonHeight
+
+	leftWidth := (innerWidth * 65) / 100
+	rightWidth := innerWidth - leftWidth
+
+	// Port info content for the left panel
+	aiSummaryTitle := styles.BoldStyle.Render("AI Summary:")
+	aiSummaryContent := "\n\nThis port appears to be used by a standard service.\n\nNo unusual activity detected."
+
+	leftContent := styles.PortInfoModeStyle.
+		Width(leftWidth).
+		Height(innerHeight).
+		Render(aiSummaryTitle + aiSummaryContent)
+
+	// Human summary content for the right panel
+	rightContent := styles.PortInfoModeStyle.
+		Width(rightWidth).
+		Height(innerHeight).
+		Render(styles.BoldStyle.Render("Human Summary") + "\n\nWe will write this later\n")
+
+	content := lipgloss.JoinHorizontal(lipgloss.Top, leftContent, rightContent)
+	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render("[Q]uit | [space] Normal Mode"))
 
 	return styles.OuterStyle.Render(contentWithRibbon)
 }
