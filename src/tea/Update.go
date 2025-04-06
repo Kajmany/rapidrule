@@ -28,7 +28,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		if m.Mode == normalMode {
 			return m.updateNormalMode(msg)
-		} else if m.Mode == portInfoMode {
+		} else if m.Mode == strategyMode {
+			return m.updateStratMode(msg)
+		} else {
 			return m.updatePortInfoMode(msg)
 		}
 
@@ -135,9 +137,26 @@ func (m Model) updateNormalMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case " ": // spacebar
 		m.Mode = portInfoMode
 		return m, cmd
+	case "left", "right":
+		m.Mode = strategyMode
+		return m, cmd
 	}
 
 	// Default case - return the model unchanged
+	return m, nil
+}
+
+// for top level strat view
+func (m Model) updateStratMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
+
+	switch msg.String() {
+	case "q", "ctrl+c":
+		return m, tea.Quit
+	case "left", "right":
+		m.Mode = normalMode
+		return m, cmd
+	}
 	return m, nil
 }
 

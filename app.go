@@ -6,6 +6,7 @@ import (
 
 	localTea "github.com/Kajmany/rapidrule/src/tea"
 	"github.com/Kajmany/rapidrule/src/tea/styles"
+	"github.com/Kajmany/rapidrule/structs"
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -67,6 +68,12 @@ func main() {
 
 	// Initialize model with the prepared table
 	initialModel := localTea.NewModel(t)
+
+	initialModel.Strats = []structs.Strat{
+		{Title: "Foo", Body: "Foo desc"},
+		{Title: "Bar", Body: "Bar desc"},
+		{Title: "Buzz", Body: "Buzz desc"},
+	}
 
 	// Use the initialModel that has the table
 	p := tea.NewProgram(initialModel, tea.WithAltScreen())
