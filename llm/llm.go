@@ -79,7 +79,7 @@ func GeminiPortsEval(port_strings string) ([]structs.Eval, error) {
 		Properties: map[string]*genai.Schema{
 			"concerns": {
 				Type:        genai.TypeString,
-				Description: "Describe possible concerns of this service in one sentence.",
+				Description: "Describe possible concerns of this service and why they're concerning.",
 			},
 			"investigate": {
 				Type:        genai.TypeString,
