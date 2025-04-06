@@ -49,7 +49,7 @@ const (
 
 func (a Alert) String() string {
 	// TODO: repr type if useful need a case
-	return fmt.Sprintf("Alert: %s", a.ShortDesc)
+	return fmt.Sprintf("Alert: %s\n    %s", a.ShortDesc, a.LongDesc)
 }
 
 // Should be made from structued LLM output
