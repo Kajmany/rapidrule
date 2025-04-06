@@ -7,6 +7,7 @@ import (
 	"github.com/Kajmany/rapidrule/scraper"
 	"github.com/Kajmany/rapidrule/src/tea/styles"
 	"github.com/Kajmany/rapidrule/structs"
+	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -45,9 +46,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var ports_str string
 		for i, port := range msg.Ports {
 			log.Printf("%d: %s", i, port.String())
-			ports_str += port.String()
+			ports_str += port.ToPrompt()
 		}
 		m.Ports = msg.Ports
+		var new_rows []table.Row
+		for _, port := range m.Ports {
+			new_rows = append(new_rows, port.ToRow())
+		}
+		m.StatusData.SetRows(new_rows)
 		commands = append(commands, llm.GetPortEvals(ports_str))
 
 		// or not...
@@ -70,16 +76,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		log.Println("got info for port evals")
 		for _, eval := range msg.Evals {
 			log.Printf("Port %d: %s", eval.Port, eval.String())
-			for _, port := range m.Ports {
-				if port.Port == eval.Port {
-					port.Eval = &eval
+			for i, _ := range m.Ports {
+				if m.Ports[i].Port == eval.Port {
+					m.Ports[i].Eval = &eval
 					switch eval.Investigate {
 					case "No":
-						port.LLMRes = structs.Good
+						m.Ports[i].LLMRes = structs.Good
 					case "Maybe":
-						port.LLMRes = structs.Attention
+						m.Ports[i].LLMRes = structs.Attention
 					case "Yes":
-						port.LLMRes = structs.Bad
+						m.Ports[i].LLMRes = structs.Bad
 					}
 					break
 				}
