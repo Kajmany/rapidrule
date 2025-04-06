@@ -27,3 +27,6 @@ go.work.sum
 *.log
 # we do a little prompting
 .aider*
+
+# bin
+rapidrule
