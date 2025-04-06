@@ -15,9 +15,9 @@ type (
 	chain struct {
 		Name  string
 		Type  string
-		Rules []rule
+		Rules []Rule
 	}
-	rule string
+	Rule string
 )
 
 const NFTTemplate = `table inet rapdidrule {
@@ -61,7 +61,7 @@ const ChainTemplate = `chain {{.Name}} {
 }`
 
 // TODO: This is kind of redundant panic code w.r.t what template takes
-func GenChain(name string, chainType string, rules []rule) chain {
+func GenChain(name string, chainType string, rules []Rule) chain {
 	var sb strings.Builder
 	tmpl := template.Must(template.New("chain").Parse(ChainTemplate))
 
