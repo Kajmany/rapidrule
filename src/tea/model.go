@@ -20,6 +20,7 @@ type Model struct {
 	Mode       inputMode
 	Ports      []structs.Port
 	Alerts     []structs.Alert
+	AIsummary  string
 }
 
 // NewModel creates a new model with the given table

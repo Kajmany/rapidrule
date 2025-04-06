@@ -103,14 +103,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		log.Printf("%s", msg.TotalEval.String())
 
 		if msg.TotalEval.Alert == "Red" {
-			alert := structs.NewAlert(msg.TotalEval.AlertMessage, 1)
+			alert := structs.NewAlert(msg.TotalEval.AlertShort, msg.TotalEval.AlertLong, structs.Red)
 			m.Alerts = append(m.Alerts, alert)
 		} else if msg.TotalEval.Alert == "Yellow" {
-			alert := structs.NewAlert(msg.TotalEval.AlertMessage, 2)
+			alert := structs.NewAlert(msg.TotalEval.AlertShort, msg.TotalEval.AlertLong, structs.Yellow)
 			m.Alerts = append(m.Alerts, alert)
 		}
-		alert := structs.NewAlert(msg.TotalEval.Overall, 3)
-		m.Alerts = append(m.Alerts, alert)
+		m.AIsummary = msg.TotalEval.Overall
 		m.View()
 
 	case llm.TotalEvalError:
