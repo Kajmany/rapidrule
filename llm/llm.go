@@ -2,7 +2,6 @@ package llm
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -29,17 +28,18 @@ func getKey(key_name string) string {
 	return apiKey
 }
 
-func CallGemini(prompt string) {
-
-	// This example shows how to get a JSON response that conforms to a schema.
+// Function based upon examples at
+// https://github.com/google/generative-ai-go
+func CallGemini_struct(prompt string) {
+	// Initialize model
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, option.WithAPIKey(geminiKey))
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer client.Close()
-
 	llm_model := client.GenerativeModel("gemini-2.0-flash")
+
 	// Ask the model to respond with JSON.
 	llm_model.ResponseMIMEType = "application/json"
 	// Specify the schema.
@@ -47,18 +47,22 @@ func CallGemini(prompt string) {
 		Type:  genai.TypeArray,
 		Items: &genai.Schema{Type: genai.TypeString},
 	}
-	resp, err := llm_model.GenerateContent(ctx, genai.Text("List a few popular cookie recipes using this JSON schema."))
+	resp, err := llm_model.GenerateContent(ctx, genai.Text(prompt+" Using this JSON schema."))
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, part := range resp.Candidates[0].Content.Parts {
-		if txt, ok := part.(genai.Text); ok {
-			var recipes []string
-			if err := json.Unmarshal([]byte(txt), &recipes); err != nil {
-				log.Fatal(err)
-			}
-			fmt.Println(recipes)
+	printResponse(resp)
+
+}
+
+// Print Gemini response helper function
+func printResponse(resp *genai.GenerateContentResponse) string {
+	var ret string
+	for _, cand := range resp.Candidates {
+		for _, part := range cand.Content.Parts {
+			ret = ret + fmt.Sprintf("%v", part)
+			fmt.Println(part)
 		}
 	}
-
+	return ret
 }

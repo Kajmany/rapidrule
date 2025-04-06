@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Kajmany/rapidrule/llm"
 	localTea "github.com/Kajmany/rapidrule/src/tea"
 	"github.com/Kajmany/rapidrule/src/tea/styles"
 	"github.com/charmbracelet/bubbles/table"
@@ -13,7 +12,8 @@ import (
 )
 
 func main() {
-	llm.CallGemini("hi")
+	// llm.CallGemini_struct("List what is love")
+	// os.Exit(1)
 
 	// Create table columns
 	columns := []table.Column{
