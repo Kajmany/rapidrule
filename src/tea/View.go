@@ -68,10 +68,27 @@ func (m Model) normalView() string {
 		Height(innerHeight).
 		Render(statusTitle + "\n\n" + tableView + "\n\n" + detailContent)
 
+	alertsTitle := styles.BoldStyle.Render("Alerts:\n")
+	alertsContent := ""
+
+	if len(m.Alerts) == 0 {
+		alertsContent = "\n\nNo Alerts at this time."
+	} else {
+		for _, alert := range m.Alerts {
+			alertsContent += "\n" + styles.BoldStyle.Render(alert.ShortDesc)
+			alertsContent += "\n" + alert.LongDesc + "\n\n"
+		}
+	}
+
+	// Add help text at the bottom
+	if alertsContent == "\n\nNo alerts at this time." {
+		alertsContent += "\n\nPress 'q' to quit."
+	}
+
 	rightContent := styles.NormalModeStyle.
 		Width(rightWidth).
 		Height(innerHeight).
-		Render(styles.BoldStyle.Render("Alerts") + "\n\nDetails, info, or secondary view.\n\nPress 'q' to quit.")
+		Render(alertsTitle + alertsContent)
 
 	content := lipgloss.JoinHorizontal(lipgloss.Top, leftContent, rightContent)
 	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render("[Q]uit | [↑] Up | [↓] Down | [space] Port Details"))
