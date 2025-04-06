@@ -102,28 +102,19 @@ func (m Model) portInfoView() string {
 	innerWidth := m.Width - 2*styles.OuterPadding
 	innerHeight := m.Height - 2*styles.OuterPadding - styles.RibbonHeight
 
-	leftWidth := (innerWidth * 65) / 100
-	rightWidth := innerWidth - leftWidth
-
-	// Port info content for the left panel
+	// Port info content - using full width instead of split view
 	aiSummaryTitle := styles.BoldStyle.Render("AI Summary:")
 	aiSummaryContent := "\n\nThis port appears to be used by a standard service.\n\nNo unusual activity detected."
 	if len(m.Ports) > m.StatusData.Cursor() && m.Ports[m.StatusData.Cursor()].Eval != nil {
 		aiSummaryContent = "\n\n" + (*(m.Ports[m.StatusData.Cursor()].Eval)).Concerns
 	}
 
-	leftContent := styles.PortInfoModeStyle.
-		Width(leftWidth).
+	// Use the full inner width for the AI summary
+	content := styles.PortInfoModeStyle.
+		Width(innerWidth).
 		Height(innerHeight).
 		Render(aiSummaryTitle + aiSummaryContent)
 
-	// Human summary content for the right panel
-	rightContent := styles.PortInfoModeStyle.
-		Width(rightWidth).
-		Height(innerHeight).
-		Render(styles.BoldStyle.Render("Human Summary") + "\n\nWe will write this later\n")
-
-	content := lipgloss.JoinHorizontal(lipgloss.Top, leftContent, rightContent)
 	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render("[Q]uit | [space] Normal Mode"))
 
 	return styles.OuterStyle.Render(contentWithRibbon)
@@ -141,15 +132,20 @@ func (m Model) stratView() string {
 	stratTitle := styles.BoldStyle.Render("Reccomended NFTables Strategies:")
 	stratContent := ""
 
+	// Display error message if strategy application failed
+	if m.StrategyApplyError != "" {
+		stratContent = "\n\n" + styles.ErrorStyle.Render(m.StrategyApplyError) + "\n"
+	}
+
 	if len(m.Strats) == 0 {
-		stratContent = "\n\nNo Strategies at this time."
+		stratContent += "\n\nNo Strategies at this time."
 	} else {
 		// Loop through strategies and highlight the selected one
 		for i, strat := range m.Strats {
 			// Add newline before each strategy
 			if i > 0 {
 				stratContent += "\n\n"
-			} else {
+			} else if m.StrategyApplyError == "" { // Only add newline if no error message
 				stratContent += "\n"
 			}
 

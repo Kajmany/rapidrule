@@ -156,11 +156,15 @@ func (m Model) updateStratMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "q", "ctrl+c":
 		return m, tea.Quit
 	case "left", "right":
+		// Clear any error messages when changing modes
+		m.StrategyApplyError = ""
 		m.Mode = normalMode
 		return m, cmd
 	case "up":
 		// Move cursor up, with wraparound
 		if len(m.Strats) > 0 {
+			// Clear error when navigating
+			m.StrategyApplyError = ""
 			m.StratCursor--
 			if m.StratCursor < 0 {
 				m.StratCursor = len(m.Strats) - 1
@@ -170,6 +174,8 @@ func (m Model) updateStratMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "down":
 		// Move cursor down, with wraparound
 		if len(m.Strats) > 0 {
+			// Clear error when navigating
+			m.StrategyApplyError = ""
 			m.StratCursor++
 			if m.StratCursor >= len(m.Strats) {
 				m.StratCursor = 0
@@ -178,11 +184,15 @@ func (m Model) updateStratMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case " ": // spacebar - toggle staging the currently selected strategy
 		if len(m.Strats) > 0 && m.StratCursor >= 0 && m.StratCursor < len(m.Strats) {
+			// Clear error when staging/unstaging a strategy
+			m.StrategyApplyError = ""
 			// Toggle the staged state of the current strategy
 			m.AppliedStrats[m.StratCursor] = !m.AppliedStrats[m.StratCursor]
 		}
 		return m, nil
 	case "enter": // Enter key - go to staging confirmation screen
+		// Clear error when going to staging screen
+		m.StrategyApplyError = ""
 		// Switch to staging mode to confirm application of strategies
 		m.Mode = stagingMode
 		return m, nil
@@ -231,6 +241,9 @@ func (m Model) updateStagingMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 				// Exit the application gracefully after applying strategies
 				return m, tea.Quit
 			} else {
+				log.Println("Failed to apply strategies")
+				// Set failure message
+				m.StrategyApplyError = "Failed to apply strategies. Please try again."
 				// Return to strategy view if application failed
 				m.Mode = strategyMode
 				return m, nil
