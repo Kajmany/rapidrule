@@ -6,9 +6,12 @@ type Port struct {
   LocalAddr string, // Can be text like loopback
   Port int,
   Process string, // Not PID, just name (add pid later if we need it)
-  // Other state
+  // Notice no shortdesc
+  LongDesc string, // Our own templated string
   LLMDescription string, // Multiline human-readable elaboration
+  // Other state
   LLMRes Judgement, // Machine-readable judgement
+  LLMStatus JudgementProgress,
 
 }
 
@@ -20,6 +23,7 @@ type Alert struct {
   LLMDescription string, // Multiline human-readable elaboration
   // Other state
   LLMRes Judgement, // Machine-readable judgement
+  LLMStatus JudgementProgress,
 }
 
 // Should be made from structued LLM output
