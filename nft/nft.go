@@ -23,10 +23,18 @@ const (
 	nftConfigPath = "/etc/nftables.conf"
 )
 
+type NFTMsgType int
+
+const (
+	Check    NFTMsgType = iota
+	WriteOut            // We can END now! yay
+)
+
 type NFTMsg struct {
 	// TODO: What else matters here? v0v we'll find out
 	Changed bool
 	Output  string
+	Type    NFTMsgType
 }
 
 type NFTErr struct {

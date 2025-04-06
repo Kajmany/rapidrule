@@ -12,7 +12,7 @@ import (
 // but these IDEALLY represent well-formed NFTable elements
 type (
 	table string
-	chain struct {
+	Chain struct {
 		Name  string
 		Type  string
 		Rules []Rule
@@ -37,7 +37,7 @@ const NFTTemplate = `table inet rapdidrule {
 //	log.Printf(nftCommands)
 //}
 
-func GenTable(chains []chain) table {
+func GenTable(chains []Chain) table {
 	var sb strings.Builder
 	tmpl := template.Must(template.New("nft").Parse(NFTTemplate))
 
@@ -61,11 +61,11 @@ const ChainTemplate = `chain {{.Name}} {
 }`
 
 // TODO: This is kind of redundant panic code w.r.t what template takes
-func GenChain(name string, chainType string, rules []Rule) chain {
+func GenChain(name string, chainType string, rules []Rule) Chain {
 	var sb strings.Builder
 	tmpl := template.Must(template.New("chain").Parse(ChainTemplate))
 
-	err := tmpl.Execute(&sb, chain{
+	err := tmpl.Execute(&sb, Chain{
 		Name:  name,
 		Type:  chainType,
 		Rules: rules,
@@ -79,9 +79,17 @@ func GenChain(name string, chainType string, rules []Rule) chain {
 	generated := sb.String()
 	log.Printf("Generated chain:\n%s", generated)
 
-	return chain{
+	return Chain{
 		Name:  name,
 		Type:  chainType,
 		Rules: rules,
 	}
+}
+
+func GenOutBoundChain(rules []Rule) Chain {
+	// Create outbound chain with default drop policy
+	outboundType := "type filter hook output priority 0; policy drop;"
+
+	// Rules already include "accept" at the end
+	return GenChain("outbound", outboundType, rules)
 }

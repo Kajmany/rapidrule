@@ -79,12 +79,12 @@ func main() {
 		{
 			Title: "Allow ICMP",
 			Body:  "This should generally be accepted to create a well-functioning network",
-			Rule:  "meta l4proto { icmp, ipv6-icmp } accept comment",
+			Rule:  "meta l4proto { icmp, ipv6-icmp } accept",
 		},
 		{
 			Title: "Allow IGMP",
 			Body:  "This should almost always be accepted. It is important for efficient functioning of some protocols.",
-			Rule:  "ip protocol igmp accept comment",
+			Rule:  "ip protocol igmp accept",
 		},
 	}
 
