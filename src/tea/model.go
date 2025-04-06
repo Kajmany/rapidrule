@@ -13,7 +13,7 @@ const (
 	normalMode inputMode = iota
 	portInfoMode
 	strategyMode
-	strategyInfoMode
+	stagingMode
 )
 
 // Model represents the application state
@@ -59,5 +59,29 @@ func (m *Model) ApplyStrategy(stratIndex int) bool {
 	// Mark this strategy as applied
 	m.AppliedStrats[stratIndex] = true
 
+	return true
+}
+
+// ApplyAllStagedStrategies applies all the strategies that have been staged
+// This is a placeholder for the backend team to implement
+func (m *Model) ApplyAllStagedStrategies() bool {
+	log.Println("Applying all staged strategies")
+
+	// Count how many strategies are staged
+	stagedCount := 0
+	for i, strat := range m.Strats {
+		if m.AppliedStrats[i] {
+			log.Printf("Applying strategy: %s", strat.Title)
+			stagedCount++
+			// Backend team would implement actual rule application here
+		}
+	}
+
+	if stagedCount == 0 {
+		log.Println("No strategies staged for application")
+		return false
+	}
+
+	log.Printf("Successfully applied %d strategies", stagedCount)
 	return true
 }
