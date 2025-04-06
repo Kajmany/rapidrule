@@ -56,12 +56,12 @@ func (m Model) normalView() string {
 		Width(leftWidth - 4). // Match table width
 		Render(styles.BoldStyle.Render("Ai Summary of Network Security Posture:") + "\n" + loremText)
 
-	leftContent := styles.LeftStyle.
+	leftContent := styles.NormalModeStyle.
 		Width(leftWidth).
 		Height(innerHeight).
 		Render(statusTitle + "\n\n" + tableView + "\n\n" + detailContent)
 
-	rightContent := styles.RightStyle.
+	rightContent := styles.NormalModeStyle.
 		Width(rightWidth).
 		Height(innerHeight).
 		Render(styles.BoldStyle.Render("Alerts") + "\n\nDetails, info, or secondary view.\n\nPress 'q' to quit.")
@@ -84,13 +84,13 @@ func (m Model) portInfoView() string {
 	aiSummaryTitle := styles.BoldStyle.Render("AI Summary:")
 	aiSummaryContent := "\n\nThis port appears to be used by a standard service.\n\nNo unusual activity detected."
 
-	leftContent := styles.LeftStyle.
+	leftContent := styles.PortInfoModeStyle.
 		Width(leftWidth).
 		Height(innerHeight).
 		Render(aiSummaryTitle + aiSummaryContent)
 
 	// Human summary content for the right panel
-	rightContent := styles.RightStyle.
+	rightContent := styles.PortInfoModeStyle.
 		Width(rightWidth).
 		Height(innerHeight).
 		Render(styles.BoldStyle.Render("Human Summary") + "\n\nWe will write this later\n")
