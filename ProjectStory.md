@@ -15,26 +15,27 @@ RapidRule aims to provide secure and customizable firewall configurations in a f
 ## Key Features
 
 - Realtime port and security posture analysis
-- Fast generation of custom firewall templates with secure defaults  
-- Semi-automated configuration via an intuitive text-based UI  
-- Integration with Gemini for detection of vulnerabilities and misconfigurations  
+- Fast generation of custom firewall templates with secure templatization  
+- Clean and fast Text Based User interface (TUI)
+- Integration with Gemini for detection qualification and explanation of vulnerabilities and misconfigurations  
 - Detection of compromised systems and support for automatic mitigation  
-- Flexible rule management with support for user-defined blocking criteria  
 
 ---
 
 ## Motivation
 
-Configuring firewalls remains a pain point for individuals and small teams lacking the resources or expertise to navigate complex tools. RapidRule was built to fill this gap—providing an efficient, semi-automated system that still gives users full visibility and control. It combines the speed and simplicity of preconfigured templates with the intelligence of modern language models to assist in real-time decision-making and evaluation.
+Networking and `nftables` tend to be a rather esoteric subject. All of the information can be confusing and overwhelming. With RapidRule we work to explain vulnerabilities and misconfigurations while keeping a clean UI to avoid user overload.
+
+In addition, configuring firewalls can be a painful task for anyone, but especially individuals and small teams lacking the resources or expertise to navigate complex tools. RapidRule was built to fill this gap—providing an efficient, semi-automated system that gives users full visibility and comphensive suggestions and explanations. It combines the speed and simplicity of preconfigured templates with the intelligence of modern language models to assist in real-time decision-making and evaluation.
 
 ---
 
 ## How It Works
 
 1. Launch RapidRule in the terminal.  
-2. Follow guided prompts or use auto-detected defaults.  
-3. Generate and apply a tailored `nftables` rule set.  
-4. Optionally run vulnerability analysis powered by Gemini.  
+2. Quickly see open ports and security posture analysis.  
+3. Dive deeper into individual ports with automatic analysis
+4. Generate and apply a tailored `nftables` ruleset.  
 5. Apply suggestions and monitor for compromised system behavior.
 
 All configurations can be previewed, modified, or exported before deployment.
@@ -61,15 +62,15 @@ All configurations can be previewed, modified, or exported before deployment.
 
 ## Roadmap
 
-- SUI blockchain based threat analysis sharing
-- IPv6 configuration and analysis support  
-- Rule effectiveness tracking and feedback  
-- Real-time log parsing and reactive rule adjustment  
-- Template sharing and versioning  
-- Expanded Gemini-based recommendation modules
+- Add more features to become a complete security suite
+- Complete outbound traffic anaylsis
+- SUI blockchain based threat analysis sharing through Walrus
+- Virustotal integration for analyzing suspicious processes  
+- Create a and integrate Ghidra with a Gemini plugin to add code comments and relevent variable names
+- Multisystem admin management interface
 
 ---
 
 ## Contributing
 
-We welcome contributions from the community. Whether you're interested in improving firewall templates, expanding detection logic, or enhancing the user experience, visit the [GitHub repository](https://github.com/Kajmany/rapidrule) to get involved. Issues and pull requests are always appreciated.
+We welcome suggestions and contributions from users and the community. Whether you're interested in improving firewall templates, expanding detection logic, or enhancing the user experience, visit the [GitHub repository](https://github.com/Kajmany/rapidrule) to get involved. Issues and pull requests are always appreciated.
