@@ -8,6 +8,9 @@ import (
 const (
 	RibbonHeight = 1
 	OuterPadding = 1
+	LightOrange  = "#FFC885"
+	LightGreen   = "#5FAB8F"
+	RibbonRed    = "#E67575"
 )
 
 // Styles used throughout the application
@@ -15,23 +18,16 @@ var (
 	// OuterStyle is the container style for the entire UI
 	OuterStyle = lipgloss.NewStyle()
 
-	// LeftStyle is used for the left panel containing the connection list
-	LeftStyle = lipgloss.NewStyle().
+	NormalModeStyle = lipgloss.NewStyle().
 			Padding(1).
 			Border(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#FFC885"))
-
-	// RightStyle is used for the right panel containing alerts
-	RightStyle = lipgloss.NewStyle().
-			Padding(1).
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#FFC885"))
+			BorderForeground(lipgloss.Color(LightOrange))
 
 	// RibbonStyle is used for the bottom ribbon containing shortcuts
 	RibbonStyle = lipgloss.NewStyle().
 			Padding(0, 1).
 			Height(1).
-			Background(lipgloss.Color("#FFC885")).
+			Background(lipgloss.Color(RibbonRed)).
 			Foreground(lipgloss.Color("#000000"))
 
 	// BoldStyle is used to highlight text
@@ -41,7 +37,7 @@ var (
 	// TableStyle is used for table cells and headers
 	TableStyle = lipgloss.NewStyle().
 			Border(lipgloss.NormalBorder()).
-			BorderForeground(lipgloss.Color("#FFC885")).
+			BorderForeground(lipgloss.Color(LightOrange)).
 			MarginRight(0).
 			MarginLeft(0)
 
@@ -49,4 +45,17 @@ var (
 			Foreground(lipgloss.Color("#888888")).
 			Background(lipgloss.Color("#333333")). // Add subtle background to show selection area
 			Bold(true)
+
+	// DetailStyle is used for the details section under the table
+	DetailStyle = lipgloss.NewStyle().
+			Padding(1).
+			Border(lipgloss.NormalBorder()).
+			BorderForeground(lipgloss.Color(LightOrange)).
+			MarginRight(0).
+			MarginLeft(0)
+
+	PortInfoModeStyle = lipgloss.NewStyle().
+				Padding(1).
+				Border(lipgloss.RoundedBorder()).
+				BorderForeground(lipgloss.Color(LightGreen))
 )

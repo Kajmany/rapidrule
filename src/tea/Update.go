@@ -18,7 +18,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.Mode == normalMode {
 			return m.updateNormalMode(msg)
 		} else if m.Mode == portInfoMode {
-			return m.updateEditingMode(msg)
+			return m.updatePortInfoMode(msg)
 		}
 
 	case tea.WindowSizeMsg:
@@ -53,7 +53,7 @@ func (m Model) updateNormalMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m Model) updateEditingMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+func (m Model) updatePortInfoMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg.String() {
