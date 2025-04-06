@@ -62,7 +62,7 @@ func (m Model) normalView() string {
 
 	detailContent := styles.DetailStyle.
 		Width(leftWidth - 4). // Match table width
-		Render(styles.BoldStyle.Render("Ai Summary of Network Security Posture:") + "\n" + overall_text)
+		Render(styles.BoldStyle.Render("AI Summary of Network Security Posture:") + "\n" + overall_text)
 
 	leftContent := styles.NormalModeStyle.
 		Width(leftWidth).
