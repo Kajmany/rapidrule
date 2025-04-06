@@ -13,6 +13,7 @@ const (
 	RibbonRed    = "#E67575"
 	Lime         = "#CAFE48"
 	AppliedGreen = "#7CFC00" // Bright green for applied strategies
+	DialogBlue   = "#87CEEB" // Light blue for dialog
 )
 
 // Styles used throughout the application
@@ -70,4 +71,20 @@ var (
 			Padding(1).
 			Border(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color(Lime))
+
+	// Dialog styles for the staging confirmation screen
+	DialogStyle = lipgloss.NewStyle().
+			Padding(1).
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color(DialogBlue))
+
+	DialogTitleStyle = lipgloss.NewStyle().
+				Bold(true).
+				Foreground(lipgloss.Color(DialogBlue)).
+				MarginBottom(1).
+				Align(lipgloss.Center)
+
+	DialogOptionStyle = lipgloss.NewStyle().
+				Bold(true).
+				Foreground(lipgloss.Color(DialogBlue))
 )

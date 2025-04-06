@@ -11,6 +11,8 @@ func (m Model) View() string {
 		return m.portInfoView()
 	} else if m.Mode == strategyMode {
 		return m.stratView()
+	} else if m.Mode == stagingMode {
+		return m.stagingView()
 	} else {
 		return m.normalView()
 	}
@@ -154,7 +156,7 @@ func (m Model) stratView() string {
 			// Get the title with applied indicator if needed
 			title := strat.Title
 			if m.AppliedStrats[i] {
-				title = "✓ " + title + " (Applied)"
+				title = "> " + title + " (Applied)"
 			}
 
 			// Highlight the selected strategy
@@ -193,7 +195,7 @@ func (m Model) stratView() string {
 
 		// Add applied status
 		if m.AppliedStrats[m.StratCursor] {
-			detailContent += " " + styles.AppliedStyle.Render("(Applied)")
+			detailContent += " " + styles.AppliedStyle.Render("(Staged)")
 		} else {
 			detailContent += " " + styles.BoldStyle.Render("(Not Applied)")
 		}
@@ -210,16 +212,75 @@ func (m Model) stratView() string {
 	content := lipgloss.JoinHorizontal(lipgloss.Top, leftContent, rightContent)
 
 	// Update the ribbon to include the spacebar action for applying a strategy
-	ribbonMsg := "[Q]uit | [↑] Up | [↓] Down | [<->] Normal Mode"
+	ribbonMsg := "[Q]uit | [↑] Up | [↓] Down | [<->] Normal Mode | [Enter] Apply Staged Strategies"
 	if len(m.Strats) > 0 {
 		if m.AppliedStrats[m.StratCursor] {
-			ribbonMsg += " | [Space] Remove Applied Strat"
+			ribbonMsg += " | [Space] Remove Staged Strat"
 		} else {
-			ribbonMsg += " | [Space] Apply Strategy"
+			ribbonMsg += " | [Space] Stage Strategy"
 		}
 	}
 
 	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render(ribbonMsg))
+
+	return styles.OuterStyle.Render(contentWithRibbon)
+}
+
+func (m Model) stagingView() string {
+	// Subtract padding for width and height
+	innerWidth := m.Width - 2*styles.OuterPadding
+	innerHeight := m.Height - 2*styles.OuterPadding - styles.RibbonHeight
+
+	// Count staged strategies
+	stagedCount := 0
+	for i := range m.Strats {
+		if m.AppliedStrats[i] {
+			stagedCount++
+		}
+	}
+
+	// Create the confirmation dialog
+	title := styles.DialogTitleStyle.Render("Confirm Strategy Application")
+
+	// Generate content that shows all staged strategies
+	content := "\n\nThe following strategies will be applied:\n\n"
+
+	if stagedCount == 0 {
+		content = "\n\nNo strategies have been staged for application.\n\nReturn to strategy view and stage some strategies first."
+	} else {
+		for i, strat := range m.Strats {
+			if m.AppliedStrats[i] {
+				content += "• " + styles.BoldStyle.Render(strat.Title) + "\n"
+			}
+		}
+		content += "\n"
+	}
+
+	// Add the confirmation options
+	if stagedCount > 0 {
+		content += styles.DialogOptionStyle.Render("[Y]") + " Yes, apply these strategies\n"
+	}
+	content += styles.DialogOptionStyle.Render("[N]") + " No, return to strategy view"
+
+	dialogContent := styles.DialogStyle.
+		Width(innerWidth - 20). // Make dialog narrower than the full width
+		Render(title + content)
+
+	// Center the dialog in the available space
+	dialogBox := lipgloss.Place(
+		innerWidth,
+		innerHeight,
+		lipgloss.Center,
+		lipgloss.Center,
+		dialogContent,
+	)
+
+	// Add the ribbon with limited options
+	contentWithRibbon := lipgloss.JoinVertical(
+		lipgloss.Top,
+		dialogBox,
+		styles.RibbonStyle.Render("[Y] Apply All | [N] Cancel"),
+	)
 
 	return styles.OuterStyle.Render(contentWithRibbon)
 }
