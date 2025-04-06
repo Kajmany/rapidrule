@@ -51,7 +51,18 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case scraper.PortScrapeError:
 		log.Printf("port scrape error message: %s", msg.Err.Error())
 
-<<<<<<< HEAD
+	case scraper.AlertMsg:
+		if msg.HasAlert {
+			log.Printf("got an alert: %s", msg.Alert.String())
+			m.Alerts = append(m.Alerts, msg.Alert)
+		} else {
+			// Which? who knows?
+			log.Printf("alert check came back clear")
+		}
+
+	case scraper.AlertError:
+		log.Printf("problem trying to check alert status: %s", msg.Err.Error())
+
 	case llm.PortEvalMsg:
 		log.Println("got info for port evals")
 		for _, eval := range msg.Evals {
@@ -74,20 +85,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case llm.PortEvalError:
 		log.Printf("port eval error message: %s", msg.Err.Error())
-=======
-	case scraper.AlertMsg:
-		if msg.HasAlert {
-			log.Printf("got an alert: %s", msg.Alert.String())
-			m.Alerts = append(m.Alerts, msg.Alert)
-		} else {
-			// Which? who knows?
-			log.Printf("alert check came back clear")
-		}
-
-	case scraper.AlertError:
-		log.Printf("problem trying to check alert status: %s", msg.Err.Error())
-
->>>>>>> main
 	}
 
 	// Let the table handle other update events
