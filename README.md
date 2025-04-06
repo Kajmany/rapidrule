@@ -70,7 +70,7 @@ All configurations can be previewed, modified, or exported before deployment.
 - Complete outbound traffic anaylsis
 - SUI blockchain based threat analysis sharing through Walrus
 - Virustotal integration for analyzing suspicious processes  
-- Create a and integrate Ghidra with a Gemini plugin to add code comments and relevent variable names
+- Create and integrate Ghidra with a Gemini plugin to add code comments and relevent variable names
 - Multisystem admin management interface
 
 ---
