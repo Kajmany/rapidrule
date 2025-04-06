@@ -12,6 +12,8 @@ const (
 	LightGreen   = "#5FAB8F"
 	RibbonRed    = "#E67575"
 	Lime         = "#CAFE48"
+	AppliedGreen = "#7CFC00" // Bright green for applied strategies
+	DialogBlue   = "#87CEEB" // Light blue for dialog
 )
 
 // Styles used throughout the application
@@ -47,6 +49,11 @@ var (
 			Background(lipgloss.Color("#333333")). // Add subtle background to show selection area
 			Bold(true)
 
+	// Style for strategies that have been applied
+	AppliedStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color(AppliedGreen)).
+			Bold(true)
+
 	// DetailStyle is used for the details section under the table
 	DetailStyle = lipgloss.NewStyle().
 			Padding(1).
@@ -64,4 +71,20 @@ var (
 			Padding(1).
 			Border(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color(Lime))
+
+	// Dialog styles for the staging confirmation screen
+	DialogStyle = lipgloss.NewStyle().
+			Padding(1).
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color(DialogBlue))
+
+	DialogTitleStyle = lipgloss.NewStyle().
+				Bold(true).
+				Foreground(lipgloss.Color(DialogBlue)).
+				MarginBottom(1).
+				Align(lipgloss.Center)
+
+	DialogOptionStyle = lipgloss.NewStyle().
+				Bold(true).
+				Foreground(lipgloss.Color(DialogBlue))
 )

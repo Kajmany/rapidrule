@@ -30,6 +30,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.updateNormalMode(msg)
 		} else if m.Mode == strategyMode {
 			return m.updateStratMode(msg)
+		} else if m.Mode == stagingMode {
+			return m.updateStagingMode(msg)
 		} else {
 			return m.updatePortInfoMode(msg)
 		}
@@ -156,6 +158,34 @@ func (m Model) updateStratMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "left", "right":
 		m.Mode = normalMode
 		return m, cmd
+	case "up":
+		// Move cursor up, with wraparound
+		if len(m.Strats) > 0 {
+			m.StratCursor--
+			if m.StratCursor < 0 {
+				m.StratCursor = len(m.Strats) - 1
+			}
+		}
+		return m, nil
+	case "down":
+		// Move cursor down, with wraparound
+		if len(m.Strats) > 0 {
+			m.StratCursor++
+			if m.StratCursor >= len(m.Strats) {
+				m.StratCursor = 0
+			}
+		}
+		return m, nil
+	case " ": // spacebar - toggle staging the currently selected strategy
+		if len(m.Strats) > 0 && m.StratCursor >= 0 && m.StratCursor < len(m.Strats) {
+			// Toggle the staged state of the current strategy
+			m.AppliedStrats[m.StratCursor] = !m.AppliedStrats[m.StratCursor]
+		}
+		return m, nil
+	case "enter": // Enter key - go to staging confirmation screen
+		// Switch to staging mode to confirm application of strategies
+		m.Mode = stagingMode
+		return m, nil
 	}
 	return m, nil
 }
@@ -170,5 +200,47 @@ func (m Model) updatePortInfoMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.Mode = normalMode
 		return m, cmd
 	}
+	return m, nil
+}
+
+// Handle key events in the staging confirmation view
+func (m Model) updateStagingMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	switch msg.String() {
+	case "q", "ctrl+c":
+		return m, tea.Quit
+	case "n", "N", "esc":
+		// Cancel and return to strategy view
+		m.Mode = strategyMode
+		return m, nil
+	case "y", "Y":
+		// Apply all staged strategies
+		stagedCount := 0
+		for i := range m.Strats {
+			if m.AppliedStrats[i] {
+				stagedCount++
+			}
+		}
+
+		// Only proceed if there are strategies staged
+		if stagedCount > 0 {
+			// Apply all staged strategies
+			success := m.ApplyAllStagedStrategies()
+
+			if success {
+				log.Println("All strategies applied successfully")
+				// Exit the application gracefully after applying strategies
+				return m, tea.Quit
+			} else {
+				// Return to strategy view if application failed
+				m.Mode = strategyMode
+				return m, nil
+			}
+		} else {
+			// If no strategies are staged, just return to strategy view
+			m.Mode = strategyMode
+			return m, nil
+		}
+	}
+
 	return m, nil
 }
