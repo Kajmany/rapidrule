@@ -83,6 +83,9 @@ func (m Model) portInfoView() string {
 	// Port info content for the left panel
 	aiSummaryTitle := styles.BoldStyle.Render("AI Summary:")
 	aiSummaryContent := "\n\nThis port appears to be used by a standard service.\n\nNo unusual activity detected."
+	if len(m.Ports) > m.StatusData.Cursor() && m.Ports[m.StatusData.Cursor()].Eval != nil {
+		aiSummaryContent = "\n\n" + (*(m.Ports[m.StatusData.Cursor()].Eval)).Concerns
+	}
 
 	leftContent := styles.PortInfoModeStyle.
 		Width(leftWidth).
