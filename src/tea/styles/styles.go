@@ -14,6 +14,7 @@ const (
 	Lime         = "#CAFE48"
 	AppliedGreen = "#7CFC00" // Bright green for applied strategies
 	DialogBlue   = "#87CEEB" // Light blue for dialog
+	ErrorRed     = "#FF4747" // Bright red for error messages
 )
 
 // Styles used throughout the application
@@ -52,6 +53,11 @@ var (
 	// Style for strategies that have been applied
 	AppliedStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color(AppliedGreen)).
+			Bold(true)
+
+	// Style for error messages
+	ErrorStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color(ErrorRed)).
 			Bold(true)
 
 	// DetailStyle is used for the details section under the table

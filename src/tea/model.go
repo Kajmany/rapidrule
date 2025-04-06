@@ -29,6 +29,8 @@ type Model struct {
 	StratCursor int
 	// Track whether a strategy has been applied
 	AppliedStrats map[int]bool
+	// Error message when strategy application fails
+	StrategyApplyError string
 }
 
 // NewModel creates a new model with the given table
