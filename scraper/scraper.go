@@ -119,9 +119,9 @@ func CheckIfRoot() tea.Cmd {
 	}
 }
 
+// Yes this is nft stuff not inside pkg nft but it makes sense here
 func CheckTables() tea.Cmd {
 	return func() tea.Msg {
-		// TODO: Should this logic be in nft driver?
 		cmd := exec.Command("nft", "list", "tables")
 		output, err := cmd.CombinedOutput()
 		if err != nil {
@@ -130,11 +130,27 @@ func CheckTables() tea.Cmd {
 
 		tables := strings.TrimSpace(string(output))
 		if tables != "" {
+			var tableLines []string
+			scanner := bufio.NewScanner(strings.NewReader(tables))
+			for scanner.Scan() {
+				line := scanner.Text()
+				if strings.HasPrefix(line, "table ") {
+					parts := strings.Fields(line)
+					if len(parts) >= 3 {
+						tableLines = append(tableLines, fmt.Sprintf("%s %s", parts[1], parts[2]))
+					}
+				}
+			}
+
+			// TODO: This is functional but not quite formatted pretty
+			longDesc := "System already has nftables rules which may conflict:\n" +
+				strings.Join(tableLines, "\n")
+
 			return AlertMsg{
 				HasAlert: true,
 				Alert: structs.Alert{
 					ShortDesc: "Existing nftables rules detected",
-					LongDesc:  "System already has nftables rules which may conflict",
+					LongDesc:  longDesc,
 				},
 			}
 		}
