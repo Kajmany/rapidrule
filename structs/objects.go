@@ -42,14 +42,15 @@ func (e Eval) String() string {
 }
 
 type TotalEval struct {
-	Overall      string `json:"overall"`
-	Alert        string `json:"alert"`
-	AlertMessage string `json:"alert_message"`
+	Overall    string `json:"overall"`
+	Alert      string `json:"alert"`
+	AlertShort string `json:"alert_short"`
+	AlertLong  string `json:"alert_long"`
 }
 
 func (te TotalEval) String() string {
-	return fmt.Sprintf("overall: %s,\n alert: %s,\n alert_message: %s",
-		te.Overall, te.Alert, te.AlertMessage)
+	return fmt.Sprintf("overall: %s,\n alert: %s,\n alert_short: %s,\nalert_long: %s",
+		te.Overall, te.Alert, te.AlertShort, te.AlertLong)
 }
 
 type Alert struct {
@@ -60,11 +61,11 @@ type Alert struct {
 	Type      AlertType
 }
 
-func NewAlert(str string, urgency int) Alert {
+func NewAlert(alert_short string, alert_long string, alert_type AlertType) Alert {
 	var alert Alert
-	alert.ShortDesc = str
-	alert.LongDesc = str
-	alert.Type = AlertType(urgency)
+	alert.ShortDesc = alert_short
+	alert.LongDesc = alert_long
+	alert.Type = AlertType(alert_type)
 	alert.Hotkey = 'A'
 	return alert
 }
@@ -76,6 +77,8 @@ const (
 	TablesAlready AlertType = iota
 	// Need root to get proper resolution from ss or use nft
 	NotRoot
+	Red
+	Yellow
 )
 
 func (a Alert) String() string {

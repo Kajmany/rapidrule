@@ -163,12 +163,16 @@ func GeminiTotalEval(ports_strings []string) (structs.TotalEval, error) {
 				Enum:        []string{"Red", "Yellow", "No"},
 				Description: "Should the user be alerted of security of misconfiguration concerns. Respond with an urgent Red, less urgent Yellow, or no alert.",
 			},
-			"alert_message": {
+			"alert_long": {
 				Type:        genai.TypeString,
 				Description: "Describe in one sentence what concerns the user should be alerted of.",
 			},
+			"alert_short": {
+				Type:        genai.TypeString,
+				Description: "A short title for the alert of concerns the user should be alerted of.",
+			},
 		},
-		Required: []string{"overall", "alert", "alert_message"},
+		Required: []string{"overall", "alert", "alert_long", "alert_short"},
 	}
 
 	llm_model.ResponseSchema = &genai.Schema{
