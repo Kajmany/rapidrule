@@ -46,10 +46,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var ports_str string
 		for i, port := range msg.Ports {
 			log.Printf("%d: %s", i, port.String())
-			ports_str += port.String()
+			ports_str += port.ToPrompt()
 		}
 		m.Ports = msg.Ports
-		m.StatusData.Rows()
 		var new_rows []table.Row
 		for _, port := range m.Ports {
 			new_rows = append(new_rows, port.ToRow())
@@ -129,7 +128,6 @@ func (m Model) updatePortInfoMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "q", "ctrl+c":
 		return m, tea.Quit
 	case " ": // spacebar
-		m.StatusData, cmd = m.StatusData.Update(msg)
 		m.Mode = normalMode
 		return m, cmd
 	}

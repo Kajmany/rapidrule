@@ -22,6 +22,9 @@ type Port struct {
 func (p Port) String() string {
 	return fmt.Sprintf("Port: %s:%d held by %s", p.LocalAddr, p.Port, p.Process)
 }
+func (p Port) ToPrompt() string {
+	return fmt.Sprintf("%s:%d %s,", p.LocalAddr, p.Port, p.Process)
+}
 func (p Port) ToRow() table.Row {
 	return table.Row{strconv.Itoa(p.Port), p.LocalAddr, p.Process}
 }
