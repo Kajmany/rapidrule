@@ -67,7 +67,7 @@ func (m Model) normalView() string {
 		Render(styles.BoldStyle.Render("Alerts") + "\n\nDetails, info, or secondary view.\n\nPress 'q' to quit.")
 
 	content := lipgloss.JoinHorizontal(lipgloss.Top, leftContent, rightContent)
-	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render("[Q]uit | [↑] Up | [↓] Down | [space] Port Details"))
+	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render("[Q]uit | [↑] Up | [↓] Down | [Space] Port Details"))
 
 	return styles.OuterStyle.Render(contentWithRibbon)
 }
@@ -96,7 +96,7 @@ func (m Model) portInfoView() string {
 		Render(styles.BoldStyle.Render("Human Summary") + "\n\nWe will write this later\n")
 
 	content := lipgloss.JoinHorizontal(lipgloss.Top, leftContent, rightContent)
-	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render("[Q]uit | [space] Normal Mode"))
+	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render("[Q]uit | [Space] Normal Mode"))
 
 	return styles.OuterStyle.Render(contentWithRibbon)
 }
