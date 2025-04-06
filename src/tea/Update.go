@@ -88,7 +88,7 @@ func (m Model) updateNormalMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 func (m Model) updatePortInfoMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
-
+	Rules(m)
 	switch msg.String() {
 	case "q", "ctrl+c":
 		return m, tea.Quit
