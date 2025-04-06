@@ -11,6 +11,17 @@ import (
 	"google.golang.org/api/option"
 )
 
+type response_t struct {
+	Answer tJudgement
+}
+
+const Judgement_t (
+	Yes = iota
+	No
+  )
+
+
+
 var (
 	geminiKey = getKey("GEMINI_API_KEY")
 )
@@ -44,8 +55,8 @@ func CallGemini_struct(prompt string) {
 	llm_model.ResponseMIMEType = "application/json"
 	// Specify the schema.
 	llm_model.ResponseSchema = &genai.Schema{
-		Type:  genai.TypeArray,
-		Items: &genai.Schema{Type: genai.TypeString},
+		Type: genai.TypeObject,
+		Properties: response_t,
 	}
 	resp, err := llm_model.GenerateContent(ctx, genai.Text(prompt+" Using this JSON schema."))
 	if err != nil {
