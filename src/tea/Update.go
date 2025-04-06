@@ -79,7 +79,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		log.Println("got info for port evals")
 		for _, eval := range msg.Evals {
 			log.Printf("Port %d: %s", eval.Port, eval.String())
-			for i, _ := range m.Ports {
+			for i := range m.Ports {
 				if m.Ports[i].Port == eval.Port {
 					m.Ports[i].Eval = &eval
 					switch eval.Investigate {
@@ -144,7 +144,6 @@ func (m Model) updateNormalMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 func (m Model) updatePortInfoMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
-	Rules(m)
 	switch msg.String() {
 	case "q", "ctrl+c":
 		return m, tea.Quit
