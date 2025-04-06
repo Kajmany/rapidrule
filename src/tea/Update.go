@@ -15,17 +15,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.String() {
-		case "q", "ctrl+c":
-			return m, tea.Quit
-		case "i":
-			// Scroll up in table
-			m.StatusData, cmd = m.StatusData.Update(msg)
-			return m, cmd
-		case "j":
-			// Scroll down in table
-			m.StatusData, cmd = m.StatusData.Update(msg)
-			return m, cmd
+		if m.Mode == normalMode {
+			return m.updateNormalMode(msg)
+		} else if m.Mode == portInfoMode {
+			return m.updateEditingMode(msg)
 		}
 
 	case tea.WindowSizeMsg:
@@ -40,4 +33,35 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// Let the table handle other update events
 	m.StatusData, cmd = m.StatusData.Update(msg)
 	return m, cmd
+}
+
+func (m Model) updateNormalMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
+
+	switch msg.String() {
+	case "q", "ctrl+c":
+		return m, tea.Quit
+	case "up", "down": // Handle navigation
+		m.StatusData, cmd = m.StatusData.Update(msg)
+		return m, cmd
+	case " ": //spacebar
+		m.Mode = portInfoMode
+		return m, cmd
+	}
+
+	// Default case - return the model unchanged
+	return m, nil
+}
+
+func (m Model) updateEditingMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
+
+	switch msg.String() {
+	case "q", "ctrl+c":
+		return m, tea.Quit
+	case " ": //spacebar
+		m.Mode = normalMode
+		return m, cmd
+	}
+	return m, nil
 }

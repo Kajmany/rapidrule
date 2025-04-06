@@ -7,6 +7,14 @@ import (
 
 // View renders the UI
 func (m Model) View() string {
+	if m.Mode == portInfoMode {
+		return m.portInfoView()
+	} else {
+		return m.normalView()
+	}
+}
+
+func (m Model) normalView() string {
 	// Subtract padding for width and height
 	innerWidth := m.Width - 2*styles.OuterPadding
 	innerHeight := m.Height - 2*styles.OuterPadding - styles.RibbonHeight
@@ -49,7 +57,36 @@ func (m Model) View() string {
 		Render(styles.BoldStyle.Render("Alerts") + "\n\nDetails, info, or secondary view.\n\nPress 'q' to quit.")
 
 	content := lipgloss.JoinHorizontal(lipgloss.Top, leftContent, rightContent)
-	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render("[Q]uit | [I]p | [J]down"))
+	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render("[Q]uit | [↑] Up | [↓] Down | [space] Port Details"))
+
+	return styles.OuterStyle.Render(contentWithRibbon)
+}
+
+func (m Model) portInfoView() string {
+	// Subtract padding for width and height
+	innerWidth := m.Width - 2*styles.OuterPadding
+	innerHeight := m.Height - 2*styles.OuterPadding - styles.RibbonHeight
+
+	leftWidth := (innerWidth * 65) / 100
+	rightWidth := innerWidth - leftWidth
+
+	// Port info content for the left panel
+	aiSummaryTitle := styles.BoldStyle.Render("AI Summary:")
+	aiSummaryContent := "\n\nThis port appears to be used by a standard service.\n\nNo unusual activity detected."
+
+	leftContent := styles.LeftStyle.
+		Width(leftWidth).
+		Height(innerHeight).
+		Render(aiSummaryTitle + aiSummaryContent)
+
+	// Human summary content for the right panel
+	rightContent := styles.RightStyle.
+		Width(rightWidth).
+		Height(innerHeight).
+		Render(styles.BoldStyle.Render("Human Summary") + "\n\nWe will write this later\n")
+
+	content := lipgloss.JoinHorizontal(lipgloss.Top, leftContent, rightContent)
+	contentWithRibbon := lipgloss.JoinVertical(lipgloss.Top, content, styles.RibbonStyle.Render("[Q]uit | [space] Normal Mode"))
 
 	return styles.OuterStyle.Render(contentWithRibbon)
 }
