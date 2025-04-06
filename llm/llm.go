@@ -110,7 +110,7 @@ func GeminiPortsEval(port_strings string) ([]structs.Eval, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("Request: ", llm_request, "\nResponse: ", stringifyResponse(resp))
+	log.Printf("Request: %s,\nResponse: %s", llm_request, stringifyResponse(resp))
 
 	var evals []structs.Eval
 	err = json.Unmarshal([]byte(stringifyResponse(resp)), &evals)
