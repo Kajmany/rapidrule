@@ -1,15 +1,19 @@
+// Abstraction over Operating System to 'scrape' current state of
+// ports/processes/nftable rules as useful
 package scraper
 
 import (
+	"bufio"
 	"fmt"
+	"log"
 	"os/exec"
 	"regexp"
+	"strconv"
+	"strings"
 
-	"github.com/charmbracelet/bubbletea"
+	"github.com/Kajmany/rapidrule/structs"
+	tea "github.com/charmbracelet/bubbletea"
 )
-
-// Abstraction over Operating System to 'scrape' current state of
-// ports/processes/nftable rules as useful
 
 // PortsMsg is sent when port scraping completes successfully
 type PortsMsg struct {
@@ -31,11 +35,13 @@ func GetPorts() tea.Cmd {
 		cmd := exec.Command("ss", "-tlnp")
 		output, err := cmd.CombinedOutput()
 		if err != nil {
+			log.Println("problem using ss to get port info")
 			return PortScrapeError{Err: err}
 		}
 
 		ports, err := parseSSOutput(string(output))
 		if err != nil {
+			log.Println("problem parsing output of ss")
 			return PortScrapeError{Err: err}
 		}
 		return PortsMsg{Ports: ports}
@@ -45,36 +51,30 @@ func GetPorts() tea.Cmd {
 // parseSSOutput parses the output of `ss -plant` into Port structs
 func parseSSOutput(output string) ([]structs.Port, error) {
 	var ports []structs.Port
-	outputs
 	// Example line:
 	// LISTEN  0        4096          127.0.0.54:53             0.0.0.0:*      users:(("systemd-resolve",pid=1288,fd=20))
 	// Captures: LocalAddr, Port, Process-Name
 	re := regexp.MustCompile(`^LISTEN\s+\d+\s+\d+\s+([^:]+):(\d+)\s+.*\"(.*)\"`)
-	scanner := bufio.NewScanner(output)
+	reader := strings.NewReader(output)
+	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if matches := re.FindStringSubmatch(line); matches != nil {
 			// Ensure we have enough matches
 			if len(matches) >= 4 {
-				ports := structs.Port{
+				portNum, err := strconv.Atoi(matches[2])
+				if err != nil {
+					return nil, err
+				}
+				port := structs.Port{
 					LocalAddr: matches[1],
-					Port:      matches[2],
+					Port:      portNum,
 					Process:   matches[3],
 				}
-				connections = append(connections, conn)
+				ports = append(ports, port)
 			}
 		}
 	}
 
-	for _, match := range matches {
-		if len(match) < 4 {
-			continue
-		}
-		ports = append(ports, structs.Port{
-			LocalAddr: match[1],
-			Port:      match[2],
-			Process:   match[3],
-		})
-	}
 	return ports, nil
 }

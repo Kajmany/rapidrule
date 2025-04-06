@@ -1,6 +1,7 @@
 package tea
 
 import (
+	"github.com/Kajmany/rapidrule/structs"
 	"github.com/charmbracelet/bubbles/table"
 )
 
@@ -17,6 +18,8 @@ type Model struct {
 	Height     int
 	StatusData table.Model
 	Mode       inputMode
+	Ports      []structs.Port
+	Alerts     []structs.Alert
 }
 
 // NewModel creates a new model with the given table
