@@ -49,4 +49,12 @@ var (
 			Foreground(lipgloss.Color("#888888")).
 			Background(lipgloss.Color("#333333")). // Add subtle background to show selection area
 			Bold(true)
+
+	// DetailStyle is used for the details section under the table
+	DetailStyle = lipgloss.NewStyle().
+			Padding(1).
+			Border(lipgloss.NormalBorder()).
+			BorderForeground(lipgloss.Color("#FFC885")).
+			MarginRight(0).
+			MarginLeft(0)
 )

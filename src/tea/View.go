@@ -29,7 +29,11 @@ func (m Model) normalView() string {
 	borderHeight := 2  // Top and bottom borders
 	paddingHeight := 2 // Padding inside the border
 
-	tableHeight := innerHeight - titleHeight - spacingHeight - borderHeight - paddingHeight
+	// Reserve space for the detail section (lorem ipsum)
+	detailHeight := 6 // Height for the detail section including borders and padding
+
+	// Adjust table height to account for detail section
+	tableHeight := innerHeight - titleHeight - spacingHeight - borderHeight - paddingHeight - detailHeight
 
 	// Ensure table height doesn't go below minimum usable size
 	if tableHeight < 5 {
@@ -46,10 +50,16 @@ func (m Model) normalView() string {
 	statusTitle := styles.BoldStyle.Render("Status:")
 	tableView := m.StatusData.View()
 
+	// Create the lorem ipsum detail section
+	loremText := "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor."
+	detailContent := styles.DetailStyle.
+		Width(leftWidth - 4). // Match table width
+		Render(styles.BoldStyle.Render("Ai Summary of Network Security Posture:") + "\n" + loremText)
+
 	leftContent := styles.LeftStyle.
 		Width(leftWidth).
 		Height(innerHeight).
-		Render(statusTitle + "\n\n" + tableView)
+		Render(statusTitle + "\n\n" + tableView + "\n\n" + detailContent)
 
 	rightContent := styles.RightStyle.
 		Width(rightWidth).
