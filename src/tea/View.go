@@ -2,6 +2,7 @@ package tea
 
 import (
 	"github.com/Kajmany/rapidrule/src/tea/styles"
+	"github.com/Kajmany/rapidrule/structs"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -51,10 +52,16 @@ func (m Model) normalView() string {
 	tableView := m.StatusData.View()
 
 	// Create the lorem ipsum detail section
-	loremText := "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor."
+	overall_text := "No security posture comments at this time."
+	for _, alert := range m.Alerts {
+		if alert.Type == structs.AlertType(3) {
+			overall_text = alert.LongDesc
+			break
+		}
+	}
 	detailContent := styles.DetailStyle.
 		Width(leftWidth - 4). // Match table width
-		Render(styles.BoldStyle.Render("Ai Summary of Network Security Posture:") + "\n" + loremText)
+		Render(styles.BoldStyle.Render("Ai Summary of Network Security Posture:") + "\n" + overall_text)
 
 	leftContent := styles.NormalModeStyle.
 		Width(leftWidth).

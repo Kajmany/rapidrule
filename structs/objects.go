@@ -41,12 +41,32 @@ func (e Eval) String() string {
 		e.Concerns, e.Investigate, e.Confidence, e.Port)
 }
 
+type TotalEval struct {
+	Overall      string `json:"overall"`
+	Alert        string `json:"alert"`
+	AlertMessage string `json:"alert_message"`
+}
+
+func (te TotalEval) String() string {
+	return fmt.Sprintf("overall: %s,\n alert: %s,\n alert_message: %s",
+		te.Overall, te.Alert, te.AlertMessage)
+}
+
 type Alert struct {
 	// Displayables
 	Hotkey    rune
 	ShortDesc string
 	LongDesc  string
 	Type      AlertType
+}
+
+func NewAlert(str string, urgency int) Alert {
+	var alert Alert
+	alert.ShortDesc = str
+	alert.LongDesc = str
+	alert.Type = AlertType(urgency)
+	alert.Hotkey = 'A'
+	return alert
 }
 
 type AlertType int

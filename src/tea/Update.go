@@ -44,9 +44,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case scraper.PortsMsg:
 		log.Println("got info for ports")
 		var ports_str string
+		var ports_strings []string
 		for i, port := range msg.Ports {
 			log.Printf("%d: %s", i, port.String())
 			ports_str += port.ToPrompt()
+			ports_strings = append(ports_strings, port.ToPrompt())
 		}
 		m.Ports = msg.Ports
 		var new_rows []table.Row
@@ -55,6 +57,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		m.StatusData.SetRows(new_rows)
 		commands = append(commands, llm.GetPortEvals(ports_str))
+		commands = append(commands, llm.GetTotalEvals(ports_strings))
 
 		// or not...
 	case scraper.PortScrapeError:
@@ -94,6 +97,24 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case llm.PortEvalError:
 		log.Printf("port eval error message: %s", msg.Err.Error())
+
+	case llm.TotalEvalMsg:
+		log.Println("got info for total eval")
+		log.Printf("%s", msg.TotalEval.String())
+
+		if msg.TotalEval.Alert == "Red" {
+			alert := structs.NewAlert(msg.TotalEval.AlertMessage, 1)
+			m.Alerts = append(m.Alerts, alert)
+		} else if msg.TotalEval.Alert == "Yellow" {
+			alert := structs.NewAlert(msg.TotalEval.AlertMessage, 2)
+			m.Alerts = append(m.Alerts, alert)
+		}
+		alert := structs.NewAlert(msg.TotalEval.Overall, 3)
+		m.Alerts = append(m.Alerts, alert)
+		m.View()
+
+	case llm.TotalEvalError:
+		log.Printf("total eval error message: %s", msg.Err.Error())
 	}
 
 	// Let the table handle other update events
