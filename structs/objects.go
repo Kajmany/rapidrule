@@ -32,16 +32,23 @@ func (e Eval) String() string {
 
 type Alert struct {
 	// Displayables
-	Hotkey         rune
-	ShortDesc      string
-	LongDesc       string
-	LLMDescription string // Multiline human-readable elaboration
-	// Other state
-	LLMRes    Judgement // Machine-readable judgement
-	LLMStatus JudgementProgress
+	Hotkey    rune
+	ShortDesc string
+	LongDesc  string
+	Type      AlertType
 }
 
+type AlertType int
+
+const (
+	// Many systems ship with rules, worth a mention
+	TablesAlready AlertType = iota
+	// Need root to get proper resolution from ss or use nft
+	NotRoot
+)
+
 func (a Alert) String() string {
+	// TODO: repr type if useful need a case
 	return fmt.Sprintf("Alert: %s", a.ShortDesc)
 }
 
