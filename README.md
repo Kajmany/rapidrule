@@ -2,7 +2,7 @@
 
 <img src="https://github.com/Kajmany/rapidrule/blob/main/RapidRulesLogo.png" width="150" alt="RapidRule logo">
 
-**GitHub Repository**: [https://github.com/Kajmany/rapidrule](https://github.com/Kajmany/rapidrule)
+**Devpost Submission**: [https://devpost.com/software/rapidrule](https://devpost.com/software/rapidrule)
 
 
 
